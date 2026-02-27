@@ -1,7 +1,7 @@
 .board {
   position: relative;
-  width: min(1100px, 96vw);
-  margin: 16px auto;
+  width: min(1265px, 98vw);
+  margin: 0px auto 6px;
   aspect-ratio: 16 / 9;
   background-size: cover;
   background-position: center;
@@ -24,12 +24,37 @@
   position: absolute;
   left: 24%;
   width: 65%;
-  border: 2px dashed rgba(50, 255, 80, 0.8);
+  border: 2px dashed rgba(50, 255, 80, 0.55);
   border-radius: 10px;
-  background: rgba(30, 100, 30, 0.12);
-  overflow-x: auto;
+  background: rgba(30, 100, 30, 0.1);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.player-row.is-placeable {
+  cursor: pointer;
+}
+
+.player-row.is-placeable:hover {
+  border-color: rgba(120, 255, 120, 0.95);
+  background: rgba(50, 180, 60, 0.2);
 }
 
 .row-1 { top: 3%;  height: 28%; }
-.row-2 { top: 36%; height: 26%; }
-.row-3 { top: 69%; height: 27%; }
+.row-2 { top: 36%; height: 28%; }
+.row-3 { top: 69%; height: 28%; }
+
+.row-cards {
+  height: 100%;
+  padding: 0px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.row-card {
+  width: 52px;
+  height: auto;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}

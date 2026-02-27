@@ -1,0 +1,40 @@
+.game-screen {
+  width: min(1500px, 99vw);
+  margin: 0 auto;
+  padding: 0px 12px;
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 14px;
+}
+
+.game-main {
+  min-width: 0;
+}
+
+.preview-panel {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  align-self: start;
+}
+
+.preview-title {
+  margin: 0 0 8px;
+  color: #f4e8d6;
+  font-size: 14px;
+}
+
+.preview-empty {
+  margin: 0;
+  color: #d7c7b0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.preview-card {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+}
