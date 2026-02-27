@@ -1,0 +1,35 @@
+.board {
+  position: relative;
+  width: min(1100px, 96vw);
+  margin: 16px auto;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.enemy-half {
+  position: absolute;
+  inset: 0 0 50% 0;
+  pointer-events: none;
+}
+
+.player-half {
+  position: absolute;
+  inset: 50% 0 0 0;
+}
+
+.player-row {
+  position: absolute;
+  left: 24%;
+  width: 65%;
+  border: 2px dashed rgba(50, 255, 80, 0.8);
+  border-radius: 10px;
+  background: rgba(30, 100, 30, 0.12);
+  overflow-x: auto;
+}
+
+.row-1 { top: 3%;  height: 28%; }
+.row-2 { top: 36%; height: 26%; }
+.row-3 { top: 69%; height: 27%; }

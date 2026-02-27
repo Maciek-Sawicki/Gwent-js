@@ -1,0 +1,25 @@
+.app {
+  min-height: 100vh;
+  padding: 12px;
+  background: #1b120c;
+}
+
+.hand {
+  width: min(1100px, 96vw);
+  margin: 12px auto 0;
+  min-height: 120px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  overflow-x: auto;
+}
+
+.hand-card{
+  width: 90px;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+}
