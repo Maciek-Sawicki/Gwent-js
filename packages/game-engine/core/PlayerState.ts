@@ -5,4 +5,5 @@ export interface PlayerState {
   hand: CardInstance[];
   board: CardInstance[];
   passed: boolean;
+  roundsWon: number;
 }
