@@ -4,8 +4,8 @@ export type ModifierType =
   | "MULTIPLY";
 
 export interface Modifier {
-  id: string;             // unikalny ID efektu
-  source: string;         // np. "tight_bond", "weather"
+  id: string;             
+  source: string;         
   type: ModifierType;
   value: number;
 }

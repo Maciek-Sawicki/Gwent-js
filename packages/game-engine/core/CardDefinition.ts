@@ -1,10 +1,9 @@
-import { GameContext } from "../effects/GameContext";
+import { Row } from "@shared/types/Row";
+import { CardPlayContext } from "../cards/CardPlayContext";
 
 export interface CardDefinition {
   id: string;
   basePower: number;
-
-  tags?: string[];
-
-  onPlay?: (context: GameContext) => void;
+  allowedRows: Row[];
+  onPlay?: (ctx: CardPlayContext) => void;
 }

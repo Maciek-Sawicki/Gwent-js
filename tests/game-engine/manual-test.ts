@@ -1,113 +1,66 @@
 import { GameEngine } from "../../packages/game-engine/core/GameEngine";
 import { GameState } from "../../packages/game-engine/core/GameState";
-import { CardRegistry } from "../../packages/game-engine/cards/CardRegistry";
-import { ScoringService } from "../../packages/game-engine/scoring/ScoringService";
-import { Modifier } from "../../packages/game-engine/scoring/Modifier";
+import { CardRegistrySetup } from "../../packages/game-engine/cards/CardRegistrySetup";
 
-// 1️⃣ Rejestracja testowych kart
+CardRegistrySetup(); 
 
-// 1. Soldier – zwykła karta 5 mocy
-CardRegistry.register({
-  id: "soldier",
-  basePower: 5
-});
-
-// 2. Tight Bond – podwaja moc identycznych kart
-CardRegistry.register({
-  id: "tightBond",
-  basePower: 3,
-  onPlay: ({ engine, cardInstanceId, playerId }) => {
-    const player = engine.getState().players[playerId];
-    const sameCards = player.board.filter(c => c.definitionId === "tightBond");
-    if (sameCards.length > 1) {
-      sameCards.forEach(c => {
-        engine.addModifier(c.id, {
-          id: "tightBondModifier",
-          source: "tightBond",
-          type: "MULTIPLY",
-          value: 2
-        } as Modifier);
-      });
-    }
-  }
-});
-
-// 3. Boost Card – dodaje 3 do mocy
-CardRegistry.register({
-  id: "boostCard",
-  basePower: 4,
-  onPlay: ({ engine, cardInstanceId }) => {
-    engine.addModifier(cardInstanceId, {
-      id: "boost",
-      source: "boostCard",
-      type: "ADD",
-      value: 3
-    } as Modifier);
-  }
-});
-
-// 4. Medic – przykładowy efekt (przywraca kartę ze stosu kart odrzuconych, tutaj tylko log)
-CardRegistry.register({
-  id: "medic",
-  basePower: 1,
-  onPlay: ({ playerId }) => {
-    console.log(`Medic effect: player ${playerId} can resurrect a card`);
-  }
-});
-
-// 5. Scorch – niszczy najsilniejszą kartę przeciwnika
-CardRegistry.register({
-  id: "scorch",
-  basePower: 0,
-  onPlay: ({ engine, playerId }) => {
-    const opponentId = playerId === "p1" ? "p2" : "p1";
-    const opponent = engine.getState().players[opponentId];
-    const maxPower = Math.max(...opponent.board.map(c => ScoringService.calculateCardPower(c)));
-    opponent.board = opponent.board.filter(c => ScoringService.calculateCardPower(c) < maxPower);
-    console.log(`Scorch played by ${playerId}, destroyed opponent's strongest cards`);
-  }
-});
-
-// 2️⃣ Tworzymy początkowy stan gry
 const initialState: GameState = {
   round: 1,
   status: "IN_PROGRESS",
   currentPlayer: "p1",
   players: {
-    p1: { id: "p1", hand: [], board: [], passed: false, roundsWon: 0 },
-    p2: { id: "p2", hand: [], board: [], passed: false, roundsWon: 0 }
+    p1: { id: "p1", hand: [], board: { MELEE: [], RANGED: [], SIEGE: [] }, passed: false, roundsWon: 0, faction: "NORTHERN_REALMS", graveyard: [] },
+    p2: { id: "p2", hand: [], board: { MELEE: [], RANGED: [], SIEGE: [] }, passed: false, roundsWon: 0, faction: "NORTHERN_REALMS", graveyard: [] }
   }
 };
 
-// 3️⃣ Tworzymy silnik
 const engine = new GameEngine(initialState);
+const p1_cards = ["blue_stripes_commando_1", "blue_stripes_commando_2", "balista_1"];
+const p2_cards = ["crinfrid reavers dragon hunter_1", "catapult_1"];
 
-// 4️⃣ Dodajemy karty do ręki
-engine.getState().players.p1.hand.push(
-  engine.createCardInstance("soldier"),
-  engine.createCardInstance("tightBond"),
-  engine.createCardInstance("tightBond")
-);
-engine.getState().players.p2.hand.push(
-  engine.createCardInstance("boostCard"),
-  engine.createCardInstance("scorch")
-);
+p1_cards.forEach(id => engine.getState().players.p1.hand.push(engine.createCardInstance(id)));
+p2_cards.forEach(id => engine.getState().players.p2.hand.push(engine.createCardInstance(id)));
 
-// 5️⃣ Sprawdzamy score przed zagraniem
-console.log("Before play p1:", engine.getScore("p1"));
-console.log("Before play p2:", engine.getScore("p2"));
 
-// 6️⃣ Zagrywamy karty
-engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id }); // Soldier
-engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id }); // BoostCard
-engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id }); // TightBond
-engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id }); // Scorch
-engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id }); // TightBond 2
+console.log("Before play:");
+console.log("P1 score:", engine.getPlayerScore("p1"));
+console.log("P2 score:", engine.getPlayerScore("p2"));
 
-// 7️⃣ Score po zagraniu
-console.log("After play p1:", engine.getScore("p1"));
-console.log("After play p2:", engine.getScore("p2"));
+engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "MELEE" }); 
+console.log("\nAfter P1 blue_stripes_commando_1:");
+console.log("P1 score:", engine.getPlayerScore("p1"));
 
-// 8️⃣ Wyświetlamy plansze
-console.log("Board p1:", engine.getState().players.p1.board.map(c => ({ id: c.id, def: c.definitionId })));
-console.log("Board p2:", engine.getState().players.p2.board.map(c => ({ id: c.id, def: c.definitionId })));
+
+
+// engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "MELEE" }); // Commando 1
+// console.log("\nAfter P1 plays Commando 1:");
+// console.log("P1 score:", engine.getPlayerScore("p1"));
+
+engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id, row: "RANGED" }); 
+console.log("\nAfter P2 plays Crinfrid 1:");
+console.log("P2 score:", engine.getPlayerScore("p2"));
+
+engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "MELEE" }); 
+console.log("\nAfter P1 blue_stripes_commando_1:");
+console.log("P1 score:", engine.getPlayerScore("p1"));
+
+
+
+
+
+// engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id, row: "SIEGE" }); // Catapult 1
+// engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "SIEGE" }); // Balista 1
+
+// console.log("\nAfter play:");
+// console.log("P1 score:", engine.getPlayerScore("p1"));
+// console.log("P2 score:", engine.getPlayerScore("p2"));
+
+console.log("\nBoard P1:");
+console.log(JSON.stringify(engine.getState().players.p1.board, null, 2));
+console.log("\nBoard P2:");
+console.log(JSON.stringify(engine.getState().players.p2.board, null, 2));
+
+const meleeCardsP1 = engine.getState().players.p1.board.MELEE;
+meleeCardsP1.forEach(c => {
+  console.log(`Card ${c.id} power: ${engine.getCardPower(c)}`);
+});
