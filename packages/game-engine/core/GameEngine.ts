@@ -6,6 +6,7 @@ import { Row } from "../../shared/types/Row"
 import { CardInstance } from "./CardInstance"
 import { PlayerState } from "./PlayerState"
 import { Modifier } from "../scoring/Modifier"
+import { ScoringService } from "../scoring/ScoringService"
 
 export class GameEngine {
   private state: GameState
@@ -36,31 +37,33 @@ export class GameEngine {
   }
 
   private handlePlayCard(playerId: string, cardId: string, row: Row) {
-  this.ensureTurn(playerId);
+    this.ensureTurn(playerId);
 
-  const player = this.state.players[playerId];
-  const index = player.hand.findIndex(c => c.id === cardId);
+    const player = this.state.players[playerId];
+    const index = player.hand.findIndex(c => c.id === cardId);
 
-  if (index === -1) throw new Error("Card not in hand");
+    if (index === -1) throw new Error("Card not in hand");
 
-  const [card] = player.hand.splice(index, 1); 
-  const definition = CardRegistry.get(card.definitionId);
+    const [card] = player.hand.splice(index, 1);
+    const definition = CardRegistry.get(card.definitionId);
 
-  if (!definition.allowedRows.includes(row)) {
-    throw new Error("Card cannot be played on this row");
+    if (!definition.allowedRows.includes(row)) {
+      throw new Error("Card cannot be played on this row");
+    }
+
+    card.row = row;
+    player.board[row].push(card);
+    this.recalculateRowEffects(playerId, row);
+
+    this.eventQueue.push({
+      type: "CARD_PLAYED",
+      playerId,
+      cardId,
+      row
+    });
+
+    this.switchTurn();
   }
-
-  player.board[row].push(card); 
-
-  this.eventQueue.push({
-    type: "CARD_PLAYED",
-    playerId,
-    cardId,
-    row
-  });
-
-  this.switchTurn();
-}
 
   private handlePass(playerId: string) {
     this.ensureTurn(playerId)
@@ -101,24 +104,38 @@ export class GameEngine {
     })
   }
 
-  // createCardInstance(definitionId: string): CardInstance {
-  //   return {
-  //     id: crypto.randomUUID(),
-  //     definitionId,
-  //     modifiers: []
-  //   }
-  // }
+  recalculateRowEffects(playerId: string, row: Row) {
+    const cards = this.getRow(playerId, row);
+
+    for (const card of cards) {
+      this.removeModifiersBySource(card.id, "tightBond");
+    }
+
+    for (const card of cards) {
+      const definition = CardRegistry.get(card.definitionId);
+
+      if (definition.ongoing) {
+        definition.ongoing({
+          engine: this,
+          state: this.state,
+          playerId,
+          cardInstanceId: card.id,
+          row
+        });
+      }
+    }
+  }
 
   createCardInstance(definitionId: string): CardInstance {
-  const def = CardRegistry.get(definitionId);
-  return {
-    id: crypto.randomUUID(),
-    definitionId,
-    row: undefined,
-    modifiers: [],
-    bondGroup: def.bondGroup // <-- dodajemy bondGroup do instancji
-  };
-}
+    const def = CardRegistry.get(definitionId);
+    return {
+      id: crypto.randomUUID(),
+      definitionId,
+      row: undefined,
+      modifiers: [],
+      bondGroup: def.bondGroup // <-- dodajemy bondGroup do instancji
+    };
+  }
 
   getCard(cardId: string): CardInstance {
     for (const player of Object.values(this.state.players)) {
@@ -152,6 +169,7 @@ export class GameEngine {
     for (const player of Object.values(this.state.players)) {
       for (const rowName of ["MELEE", "RANGED", "SIEGE"] as Row[]) {
         const row = player.board[rowName]
+        this.recalculateRowEffects(player.id, rowName)
         const index = row.findIndex(
           (c: CardInstance) => c.id === cardId
         )
@@ -184,35 +202,15 @@ export class GameEngine {
   }
 
   getCardPower(card: CardInstance): number {
-    const definition = CardRegistry.get(card.definitionId)
-    let power = definition.basePower
-    for (const mod of card.modifiers) {
-      if (mod.type === "ADD") {
-        power += mod.value
-      }
-      if (mod.type === "MULTIPLY") {
-        power *= mod.value
-      }
-      if (mod.type === "SET") {
-        power = mod.value
-      }
-    }
-    return power
+    return ScoringService.calculateCardPower(card)
   }
 
   getRowPower(playerId: string, row: Row): number {
-    const rowCards = this.state.players[playerId].board[row]
-    return rowCards
-      .map(card => this.getCardPower(card))
-      .reduce((a, b) => a + b, 0)
+    return ScoringService.calculateRowScore(this.getRow(playerId, row))
   }
 
   getPlayerScore(playerId: string): number {
-    return (
-      this.getRowPower(playerId, "MELEE") +
-      this.getRowPower(playerId, "RANGED") +
-      this.getRowPower(playerId, "SIEGE")
-    )
+    return ScoringService.calculatePlayerScore(this.state.players[playerId])
   }
 
   private resolveRoundWinner(): string {
