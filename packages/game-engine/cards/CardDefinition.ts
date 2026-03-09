@@ -14,4 +14,7 @@ export interface CardDefinition {
   tags?: string[];
   onPlay?: (ctx: CardPlayContext) => void;
   ongoing?: (ctx: CardPlayContext) => void;
+  isHero?: boolean;
+  isLeader?: boolean;
+  leaderAbility?: (ctx: CardPlayContext) => void;
 }

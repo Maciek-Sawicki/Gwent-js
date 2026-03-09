@@ -8,6 +8,10 @@ export class ScoringService {
   static calculateCardPower(card: CardInstance): number {
     const definition = CardRegistry.get(card.definitionId);
 
+    if (definition.isHero) {
+      return definition.basePower;
+    }
+
     let power = definition.basePower;
 
     const setMods = card.modifiers.filter(m => m.type === "SET");
