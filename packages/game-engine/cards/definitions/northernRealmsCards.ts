@@ -26,7 +26,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/blue_stripes_commando_1.png",
     bondGroup: "blue_stripes_commando",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "blue_stripes_commando_2",
@@ -36,7 +36,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/blue_stripes_commando_2.png",
     bondGroup: "blue_stripes_commando",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "blue_stripes_commando_3",
@@ -46,7 +46,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/blue_stripes_commando_3.png",
     bondGroup: "blue_stripes_commando",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "blue_stripes_commando_4",
@@ -56,7 +56,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/blue_stripes_commando_4.png",
     bondGroup: "blue_stripes_commando",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "blue_stripes_commando_5",
@@ -66,7 +66,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/blue_stripes_commando_5.png",
     bondGroup: "blue_stripes_commando",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "catapult_1",
@@ -76,7 +76,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/catapult_1.png",
     bondGroup: "catapult",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "catapult_2",
@@ -86,7 +86,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/catapult_2.png",
     bondGroup: "catapult",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "crinfrid reavers dragon hunter_1",
@@ -96,7 +96,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/crinfrid_reavers_dragon_hunter_1.png",
     bondGroup: "crinfrid_reavers_dragon_hunter",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "crinfrid reavers dragon hunter_2",
@@ -106,7 +106,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/crinfrid_reavers_dragon_hunter_2.png",
     bondGroup: "crinfrid_reavers_dragon_hunter",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "crinfrid reavers dragon hunter_3",
@@ -116,7 +116,7 @@ export const northernRealmsCards: CardDefinition[] = [
     faction: "NORTHERN_REALMS",
     image: "/assets/cards/crinfrid_reavers_dragon_hunter_3.png",
     bondGroup: "crinfrid_reavers_dragon_hunter",
-    onPlay: tightBondEffect
+    ongoing: tightBondEffect
   },
   {
     id: "dethmold",

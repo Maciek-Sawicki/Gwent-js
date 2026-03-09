@@ -13,5 +13,5 @@ export interface CardDefinition {
   bondGroup?: string;
   tags?: string[];
   onPlay?: (ctx: CardPlayContext) => void;
+  ongoing?: (ctx: CardPlayContext) => void;
 }
-

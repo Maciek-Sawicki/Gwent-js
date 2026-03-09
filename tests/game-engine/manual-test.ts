@@ -15,8 +15,8 @@ const initialState: GameState = {
 };
 
 const engine = new GameEngine(initialState);
-const p1_cards = ["blue_stripes_commando_1", "blue_stripes_commando_2", "balista_1"];
-const p2_cards = ["crinfrid reavers dragon hunter_1", "catapult_1"];
+const p1_cards = ["blue_stripes_commando_1", "blue_stripes_commando_2", "blue_stripes_commando_2"];
+const p2_cards = ["crinfrid reavers dragon hunter_1", "crinfrid reavers dragon hunter_1"];
 
 p1_cards.forEach(id => engine.getState().players.p1.hand.push(engine.createCardInstance(id)));
 p2_cards.forEach(id => engine.getState().players.p2.hand.push(engine.createCardInstance(id)));
@@ -30,12 +30,6 @@ engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().p
 console.log("\nAfter P1 blue_stripes_commando_1:");
 console.log("P1 score:", engine.getPlayerScore("p1"));
 
-
-
-// engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "MELEE" }); // Commando 1
-// console.log("\nAfter P1 plays Commando 1:");
-// console.log("P1 score:", engine.getPlayerScore("p1"));
-
 engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id, row: "RANGED" }); 
 console.log("\nAfter P2 plays Crinfrid 1:");
 console.log("P2 score:", engine.getPlayerScore("p2"));
@@ -44,16 +38,13 @@ engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().p
 console.log("\nAfter P1 blue_stripes_commando_1:");
 console.log("P1 score:", engine.getPlayerScore("p1"));
 
+engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id, row: "RANGED" }); 
+console.log("\nAfter P2 plays Crinfrid 1:");
+console.log("P2 score:", engine.getPlayerScore("p2"));
 
-
-
-
-// engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id, row: "SIEGE" }); // Catapult 1
-// engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "SIEGE" }); // Balista 1
-
-// console.log("\nAfter play:");
-// console.log("P1 score:", engine.getPlayerScore("p1"));
-// console.log("P2 score:", engine.getPlayerScore("p2"));
+engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "MELEE" }); 
+console.log("\nAfter P1 blue_stripes_commando_1:");
+console.log("P1 score:", engine.getPlayerScore("p1"));
 
 console.log("\nBoard P1:");
 console.log(JSON.stringify(engine.getState().players.p1.board, null, 2));

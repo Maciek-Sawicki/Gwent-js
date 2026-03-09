@@ -12,4 +12,8 @@ export class CardRegistry {
     if (!def) throw new Error(`Card definition ${id} not found`);
     return def;
   }
+
+  static getAll(): CardDefinition[] {
+    return Array.from(this.definitions.values());
+  }
 }
