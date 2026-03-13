@@ -1,7 +1,5 @@
 // 1️⃣ Rejestracja wszystkich kart – wystarczy import, efekt uboczny to dodanie do CardRegistry
-import "./cards/definitions/tightBond";
-import "./cards/definitions/medic";
-import "./cards/definitions/scorch";
+import "./effects/tightBond";
 // dodaj inne frakcje, np. Nilfgaard
 import "./cards/definitions/nilfgaardCards";
 import "./cards/definitions/northernRealmsCards";
