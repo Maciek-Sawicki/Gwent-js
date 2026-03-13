@@ -21,6 +21,7 @@ return {
   currentPlayer: state.currentPlayer,
   players: Object.values(state.players).map(player => ({
     id: player.id,
+    socketId: player.socketId,
     passed: player.passed,
     score: ScoringService.calculatePlayerScore(player),
     hand: player.hand.map(c => ({

@@ -21,9 +21,30 @@ export class GameEngine {
     return this.state
   }
 
+  // Ważny bug do naprawy
+
+  // > play 0 RANGED
+  // Playing Balista -> RANGED
+  // Server error: Error: Card cannot be played on this row
+  // > play 0 SIEGE
+  // Playing Balista -> SIEGE
+  // Server error: Error: Card not in hand
+
+  // jeżeli wibierzemy rząd, na którym karta nie może być zagrana, to karta znika z ręki i nie trafia na planszę.
+  // Dzieje się tak dlatego, że najpierw usuwamy kartę z ręki, a dopiero potem sprawdzamy, czy można ją zagrać na dany rząd.
+  // Jeśli nie można, to rzucamy wyjątek, ale karta już została usunięta z ręki i nie wraca na nią.
+  // Giga ważne do naprawy, bo inaczej gra jest niegrywalna
+
+
   dispatch(command: GameCommand): void {
+    if (this.state.status === "FINISHED") {
+      console.log("[ENGINE] Command ignored. Game is already finished.");
+      return;
+    }
+
     switch (command.type) {
       case "PLAY_CARD":
+        console.log("[ENGINE] Trying to play cardId:", command.cardId);
         this.handlePlayCard(
           command.playerId,
           command.cardId,
@@ -42,7 +63,6 @@ export class GameEngine {
 
     const player = this.state.players[playerId];
     const index = player.hand.findIndex(c => c.id === cardId);
-
     if (index === -1) throw new Error("Card not in hand");
 
     const [card] = player.hand.splice(index, 1);
@@ -62,20 +82,46 @@ export class GameEngine {
       cardId,
       row
     });
-
-    this.switchTurn();
+    this.switchTurnToNextActivePlayer();
   }
 
   private handlePass(playerId: string) {
-    this.ensureTurn(playerId)
-    this.state.players[playerId].passed = true
-    this.switchTurn()
+    const player = this.state.players[playerId];
+    if (player.passed) {
+      console.log(`[PASS IGNORED] Player ${playerId} already passed.`);
+      return;
+    }
+    player.passed = true;
+    console.log(`[PASS] Player ${playerId} has passed.`)
+    this.switchTurnToNextActivePlayer();
     this.checkRoundEnd()
   }
 
+  private switchTurnToNextActivePlayer() {
+    const playerIds = Object.keys(this.state.players);
+    let currentIndex = playerIds.indexOf(this.state.currentPlayer);
+
+    for (let i = 1; i <= playerIds.length; i++) {
+      const nextIndex = (currentIndex + i) % playerIds.length;
+      const nextPlayerId = playerIds[nextIndex];
+
+      if (!this.state.players[nextPlayerId].passed) {
+        this.state.currentPlayer = nextPlayerId;
+        console.log(`[TURN] Next active player: ${nextPlayerId}`);
+        return;
+      }
+    }
+    console.log("[TURN] All players passed, ending round...");
+    this.checkRoundEnd();
+  }
+
   private ensureTurn(playerId: string) {
+    if (this.state.players[playerId].passed) {
+      throw new Error("You have already passed");
+    }
+
     if (this.state.currentPlayer !== playerId) {
-      throw new Error("Not your turn")
+      throw new Error("Not your turn");
     }
   }
 
@@ -107,14 +153,11 @@ export class GameEngine {
 
   recalculateRowEffects(playerId: string, row: Row) {
     const cards = this.getRow(playerId, row);
-
     for (const card of cards) {
       this.removeModifiersBySource(card.id, "tightBond");
     }
-
     for (const card of cards) {
       const definition = CardRegistry.get(card.definitionId);
-
       if (definition.ongoing) {
         definition.ongoing({
           engine: this,
@@ -214,35 +257,59 @@ export class GameEngine {
     return ScoringService.calculatePlayerScore(this.state.players[playerId])
   }
 
-  private resolveRoundWinner(): string {
+  private resolveRoundWinner(): string[] {
     const players = Object.values(this.state.players)
+
     const scored = players.map(p => ({
       id: p.id,
       score: this.getPlayerScore(p.id)
     }))
-    scored.sort((a, b) => b.score - a.score)
-    return scored[0].id
+
+    const maxScore = Math.max(...scored.map(s => s.score))
+
+    return scored
+      .filter(s => s.score === maxScore)
+      .map(s => s.id)
   }
 
   private checkRoundEnd() {
-    const allPassed = Object.values(this.state.players)
-      .every(p => p.passed)
-
-    if (!allPassed) return
-
-    this.state.status = "ROUND_END"
-
-    const winner = this.resolveRoundWinner()
-    const player = this.state.players[winner]
-
-    player.roundsWon++
-
-    if (player.roundsWon === 2) {
-      this.state.status = "FINISHED"
-      return
+    if (this.state.status === "FINISHED") {
+      console.log("[ENGINE] Round end check ignored. Game is already finished.");
+      return;
     }
 
-    this.prepareNextRound()
+    const allPassed = Object.values(this.state.players).every(p => p.passed);
+    if (!allPassed) return;
+
+    console.log("[ROUND END] All players passed, resolving round...");
+    this.state.status = "ROUND_END";
+
+    const winners = this.resolveRoundWinner();
+
+    for (const winnerId of winners) {
+      const player = this.state.players[winnerId];
+      player.roundsWon++;
+      console.log(`[ROUND RESULT] ${winnerId} wins the round (total wins: ${player.roundsWon})`);
+    }
+
+    const players = Object.values(this.state.players);
+
+    const someoneHasTwoWins = players.some(p => p.roundsWon >= 2);
+    const reachedMaxRounds = this.state.round >= 3;
+
+    if (someoneHasTwoWins || reachedMaxRounds) {
+      this.state.status = "FINISHED";
+
+      const gameWinner = [...players].sort((a, b) => b.roundsWon - a.roundsWon)[0];
+
+      console.log(
+        `[GAME FINISHED] Winner: ${gameWinner.id} with ${gameWinner.roundsWon} rounds`
+      );
+
+      return;
+    }
+
+    this.prepareNextRound();
   }
 
   private prepareNextRound() {
@@ -273,7 +340,7 @@ export class GameEngine {
 
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-      ;[deck[i], deck[j]] = [deck[j], deck[i]]
+        ;[deck[i], deck[j]] = [deck[j], deck[i]]
     }
   }
 
@@ -303,27 +370,18 @@ export class GameEngine {
   }
 
   mulliganCard(playerId: string, cardId: string) {
-
-  const player = this.state.players[playerId]
-
-  if (player.mulligansUsed >= 2) {
-    throw new Error("No mulligans left")
+    const player = this.state.players[playerId]
+    if (player.mulligansUsed >= 2) {
+      throw new Error("No mulligans left")
+    }
+    const index = player.hand.findIndex(c => c.id === cardId)
+    if (index === -1) {
+      throw new Error("Card not in hand")
+    }
+    const [card] = player.hand.splice(index, 1)
+    player.deck.push(card)
+    this.shuffleDeck(playerId)
+    this.drawCards(playerId, 1)
+    player.mulligansUsed++
   }
-
-  const index = player.hand.findIndex(c => c.id === cardId)
-
-  if (index === -1) {
-    throw new Error("Card not in hand")
-  }
-
-  const [card] = player.hand.splice(index, 1)
-
-  player.deck.push(card)
-
-  this.shuffleDeck(playerId)
-
-  this.drawCards(playerId, 1)
-
-  player.mulligansUsed++
-}
 }

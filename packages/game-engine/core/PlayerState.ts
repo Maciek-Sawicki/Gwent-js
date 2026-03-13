@@ -9,6 +9,7 @@ export interface PlayerBoard {
 
 export interface PlayerState {
   id: string;
+  socketId?: string;
   deck: CardInstance[];
   hand: CardInstance[];
   board: PlayerBoard;
