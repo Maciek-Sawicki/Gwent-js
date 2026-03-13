@@ -7,6 +7,7 @@ import { CardInstance } from "./CardInstance"
 import { PlayerState } from "./PlayerState"
 import { Modifier } from "../scoring/Modifier"
 import { ScoringService } from "../scoring/ScoringService"
+import { northernRealmsCards } from "../cards/definitions/northernRealmsCards"
 
 export class GameEngine {
   private state: GameState
@@ -226,10 +227,21 @@ export class GameEngine {
   private checkRoundEnd() {
     const allPassed = Object.values(this.state.players)
       .every(p => p.passed)
+
     if (!allPassed) return
+
     this.state.status = "ROUND_END"
+
     const winner = this.resolveRoundWinner()
-    this.state.players[winner].roundsWon++
+    const player = this.state.players[winner]
+
+    player.roundsWon++
+
+    if (player.roundsWon === 2) {
+      this.state.status = "FINISHED"
+      return
+    }
+
     this.prepareNextRound()
   }
 
@@ -244,4 +256,74 @@ export class GameEngine {
     }
     this.state.round++
   }
+
+  drawCards(playerId: string, count: number) {
+    const player = this.state.players[playerId]
+
+    for (let i = 0; i < count; i++) {
+      const card = player.deck.pop()
+      if (!card) break
+
+      player.hand.push(card)
+    }
+  }
+
+  shuffleDeck(playerId: string) {
+    const deck = this.state.players[playerId].deck
+
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[deck[i], deck[j]] = [deck[j], deck[i]]
+    }
+  }
+
+  startGame() {
+    for (const player of Object.values(this.state.players)) {
+      this.shuffleDeck(player.id)
+      this.drawCards(player.id, 10)
+    }
+  }
+
+  createDeck(definitionIds: string[]): CardInstance[] {
+    return definitionIds.map(id => this.createCardInstance(id))
+  }
+
+  createNorthernRealmsDeck(): CardInstance[] {
+    return northernRealmsCards.map(card =>
+      this.createCardInstance(card.id)
+    )
+  }
+
+  initializeDecks() {
+    for (const player of Object.values(this.state.players)) {
+      if (player.faction === "NORTHERN_REALMS") {
+        player.deck = this.createNorthernRealmsDeck();
+      }
+    }
+  }
+
+  mulliganCard(playerId: string, cardId: string) {
+
+  const player = this.state.players[playerId]
+
+  if (player.mulligansUsed >= 2) {
+    throw new Error("No mulligans left")
+  }
+
+  const index = player.hand.findIndex(c => c.id === cardId)
+
+  if (index === -1) {
+    throw new Error("Card not in hand")
+  }
+
+  const [card] = player.hand.splice(index, 1)
+
+  player.deck.push(card)
+
+  this.shuffleDeck(playerId)
+
+  this.drawCards(playerId, 1)
+
+  player.mulligansUsed++
+}
 }
