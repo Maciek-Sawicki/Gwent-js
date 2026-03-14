@@ -65,15 +65,15 @@ export class GameEngine {
     const index = player.hand.findIndex(c => c.id === cardId);
     if (index === -1) throw new Error("Card not in hand");
 
-    const [card] = player.hand.splice(index, 1);
+    const card = player.hand[index];
     const definition = CardRegistry.get(card.definitionId);
 
     if (!definition.allowedRows.includes(row)) {
       throw new Error("Card cannot be played on this row");
     }
-
     card.row = row;
     player.board[row].push(card);
+    player.hand.splice(index, 1);
     this.recalculateRowEffects(playerId, row);
 
     this.eventQueue.push({
