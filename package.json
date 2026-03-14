@@ -7,6 +7,7 @@
     "jest": "^30.2.0",
     "prettier": "^3.8.1",
     "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
@@ -15,5 +16,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "socket.io-client": "^4.8.3"
+  }
 }

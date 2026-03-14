@@ -9,10 +9,13 @@ export interface PlayerBoard {
 
 export interface PlayerState {
   id: string;
+  socketId?: string;
+  deck: CardInstance[];
   hand: CardInstance[];
   board: PlayerBoard;
   passed: boolean;
   roundsWon: number;
   faction: Faction;
   graveyard: CardInstance[];
+  mulligansUsed: number;
 }
