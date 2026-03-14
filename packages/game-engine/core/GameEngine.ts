@@ -158,6 +158,9 @@ export class GameEngine {
     }
     for (const card of cards) {
       const definition = CardRegistry.get(card.definitionId);
+
+      if (definition.isHero) continue
+
       if (definition.ongoing) {
         definition.ongoing({
           engine: this,
