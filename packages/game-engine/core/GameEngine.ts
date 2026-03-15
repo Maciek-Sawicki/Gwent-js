@@ -82,6 +82,13 @@ export class GameEngine {
       cardId,
       row
     });
+
+    // Jeśli graczowi skończyły się karty w ręce, automatycznie spasuje
+    if (player.hand.length === 0) {
+      console.log(`[AUTO PASS] Player ${playerId} has no cards left, auto-passing`);
+      player.passed = true;
+    }
+
     this.switchTurnToNextActivePlayer();
   }
 
@@ -101,11 +108,25 @@ export class GameEngine {
     const playerIds = Object.keys(this.state.players);
     let currentIndex = playerIds.indexOf(this.state.currentPlayer);
 
+    // Sprawdź czy aktualny gracz nie ma kart - jeśli nie ma, automatycznie spasuj
+    const currentPlayer = this.state.players[this.state.currentPlayer];
+    if (currentPlayer && !currentPlayer.passed && currentPlayer.hand.length === 0) {
+      console.log(`[AUTO PASS] Player ${this.state.currentPlayer} has no cards left, auto-passing`);
+      currentPlayer.passed = true;
+    }
+
     for (let i = 1; i <= playerIds.length; i++) {
       const nextIndex = (currentIndex + i) % playerIds.length;
       const nextPlayerId = playerIds[nextIndex];
+      const nextPlayer = this.state.players[nextPlayerId];
 
-      if (!this.state.players[nextPlayerId].passed) {
+      // Sprawdź czy następny gracz nie ma kart - jeśli nie ma, automatycznie spasuj
+      if (!nextPlayer.passed && nextPlayer.hand.length === 0) {
+        console.log(`[AUTO PASS] Player ${nextPlayerId} has no cards left, auto-passing`);
+        nextPlayer.passed = true;
+      }
+
+      if (!nextPlayer.passed) {
         this.state.currentPlayer = nextPlayerId;
         console.log(`[TURN] Next active player: ${nextPlayerId}`);
         return;
