@@ -114,6 +114,7 @@ export class GameEngine {
     if (player.hand.length === 0) {
       console.log(`[AUTO PASS] Player ${playerId} has no cards left, auto-passing`);
       player.passed = true;
+      this.checkRoundEnd();
     }
 
     this.switchTurnToNextActivePlayer();
@@ -395,6 +396,11 @@ export class GameEngine {
       player.passed = false
     }
     this.state.round++
+
+    const playerIds = Object.keys(this.state.players)
+    this.state.currentPlayer = playerIds[0]
+
+    this.state.status = "IN_PROGRESS"
   }
 
   drawCards(playerId: string, count: number) {

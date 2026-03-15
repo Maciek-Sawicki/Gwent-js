@@ -194,10 +194,38 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
 
   const playerScore = myPlayer?.score ?? 0
   const opponentScore = opponentPlayer?.score ?? 0
+  const winner = useMemo(() => {
+    if (!gameState) return null
+    return gameState.players.reduce((best, p) =>
+      (p.roundsWon ?? 0) > (best.roundsWon ?? 0) ? p : best
+    )
+  }, [gameState])
 
   // Sprawdź czy gra czeka na drugiego gracza
   const isWaiting = gameState?.status === "WAITING"
   const playersCount = gameState?.players.length ?? 0
+  const isGameFinished = gameState?.status === "FINISHED"
+
+  if (isGameFinished && myPlayer && opponentPlayer) {
+  const didIWin = winner?.id === myPlayer.id
+
+    return (
+      <div className="game-screen">
+        <div className="loading-screen">
+          <h2>{didIWin ? "Wygrałeś grę!" : "Przegrałeś grę!"}</h2>
+
+          <p>Twoje rundy: {myPlayer.roundsWon}</p>
+          <p>Rundy przeciwnika: {opponentPlayer.roundsWon}</p>
+
+          {onLeaveGame && (
+            <button className="leave-button" onClick={onLeaveGame}>
+              Powrót
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   if (!gameState || !myPlayer || isWaiting) {
     return (
