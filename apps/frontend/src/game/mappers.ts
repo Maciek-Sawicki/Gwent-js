@@ -18,6 +18,9 @@ function backendRowToFrontendRow(backendRow: string): RowId {
  * Dla kart w ręce: używa allowedRows
  * Dla kart na planszy: używa row (karta już jest na planszy)
  */
+// Lista ID kart Spy
+const SPY_CARD_IDS = ['prince_stennis', 'sigismund_dijkstra', 'thaler']
+
 export function mapCardDtoToCardData(cardDto: CardDto, imageSrc?: string): CardData {
   // Jeśli karta jest na planszy (ma row), użyj tego rzędu
   // Jeśli karta jest w ręce (brak row), użyj allowedRows
@@ -27,10 +30,16 @@ export function mapCardDtoToCardData(cardDto: CardDto, imageSrc?: string): CardD
       ? [backendRowToFrontendRow(cardDto.row)]
       : ['melee'] // Domyślnie melee jeśli brak informacji
 
+  // Sprawdź czy to karta Spy
+  const isSpy = cardDto.definitionId ? SPY_CARD_IDS.includes(cardDto.definitionId) : false
+
   return {
     id: cardDto.id,
-    src: imageSrc || cardDto.image || '',
+    src: imageSrc || cardDto.image || '', // Obrazek dla planszy
+    handSrc: cardDto.handImage || imageSrc || cardDto.image || '', // Obrazek dla ręki (z paskami)
     rows,
     power: cardDto.power,
+    definitionId: cardDto.definitionId,
+    isSpy,
   }
 }

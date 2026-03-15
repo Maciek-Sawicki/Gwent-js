@@ -9,6 +9,7 @@ function RowZone({
   canPlaceCard,
   onRowClick,
   isOpponent = false,
+  canPlaceSpy = false,
 }: {
   rowId: RowId
   cards: BoardRows[RowId]
@@ -16,14 +17,16 @@ function RowZone({
   canPlaceCard: boolean
   onRowClick: (row: RowId) => void
   isOpponent?: boolean
+  canPlaceSpy?: boolean
 }) {
   const rowScore = cards.reduce((sum, card) => sum + (card.power ?? 0), 0)
 
   return (
     <div
-      className={`row-zone ${isOpponent ? 'opponent-row' : 'player-row'} ${className} ${canPlaceCard ? 'is-placeable' : ''}`}
+      className={`row-zone ${isOpponent ? 'opponent-row' : 'player-row'} ${className} ${canPlaceCard ? 'is-placeable' : ''} ${canPlaceSpy && isOpponent ? 'is-spy-placeable' : ''}`}
       onClick={() => {
-        if (canPlaceCard && !isOpponent) {
+        // Pozwól kliknąć jeśli: (własny rząd i canPlaceCard) LUB (rząd przeciwnika i canPlaceSpy)
+        if ((canPlaceCard && !isOpponent) || (canPlaceSpy && isOpponent)) {
           onRowClick(rowId)
         }
       }}
@@ -32,12 +35,16 @@ function RowZone({
 
       <div className="row-cards">
         {cards.map((card) => (
-          <img
-            key={card.id}
-            src={card.src}
-            alt={card.id}
-            className="row-card"
-          />
+          <div key={card.id} className="row-card-wrapper">
+            <img
+              src={card.src}
+              alt={card.id}
+              className="row-card"
+            />
+            <div className="card-power-badge">
+              {card.power ?? 0}
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -50,12 +57,14 @@ export function Board({
   canPlaceCard,
   selectedCardRows,
   onRowClick,
+  selectedCardIsSpy = false,
 }: {
   opponentRows: BoardRows
   playerRows: BoardRows
   canPlaceCard: boolean
   selectedCardRows: RowId[]
   onRowClick: (row: RowId) => void
+  selectedCardIsSpy?: boolean
 }) {
   return (
     <section
@@ -69,7 +78,8 @@ export function Board({
           cards={opponentRows.siege}
           className="row-1"
           canPlaceCard={false}
-          onRowClick={() => {}}
+          canPlaceSpy={selectedCardIsSpy && selectedCardRows.includes('siege')}
+          onRowClick={onRowClick}
           isOpponent={true}
         />
 
@@ -78,7 +88,8 @@ export function Board({
           cards={opponentRows.ranged}
           className="row-2"
           canPlaceCard={false}
-          onRowClick={() => {}}
+          canPlaceSpy={selectedCardIsSpy && selectedCardRows.includes('ranged')}
+          onRowClick={onRowClick}
           isOpponent={true}
         />
 
@@ -87,7 +98,8 @@ export function Board({
           cards={opponentRows.melee}
           className="row-3"
           canPlaceCard={false}
-          onRowClick={() => {}}
+          canPlaceSpy={selectedCardIsSpy && selectedCardRows.includes('melee')}
+          onRowClick={onRowClick}
           isOpponent={true}
         />
       </div>

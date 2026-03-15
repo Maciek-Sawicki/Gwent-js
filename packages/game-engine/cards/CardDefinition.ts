@@ -9,7 +9,8 @@ export interface CardDefinition {
   basePower: number;
   allowedRows: Row[];
   faction?: Faction;
-  image?: string;
+  image?: string; // Obrazek dla planszy (bez pasków)
+  handImage?: string; // Obrazek dla ręki (z paskami) - jeśli brak, użyj image
   bondGroup?: string;
   tags?: string[];
   onPlay?: (ctx: CardPlayContext) => void;

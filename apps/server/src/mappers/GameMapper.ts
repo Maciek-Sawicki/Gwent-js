@@ -11,6 +11,7 @@ export function mapToDto(state: GameState): GameStateDto {
       definitionId: c.definitionId,
       name: def.name,
       image: def.image,
+      handImage: def.handImage, // Obrazek dla ręki (z paskami)
       power: ScoringService.calculateCardPower(c),
       row: c.row,
       allowedRows: def.allowedRows
@@ -34,6 +35,7 @@ return {
         definitionId: c.definitionId,
         name: def.name,
         image: def.image,
+        handImage: def.handImage, // Obrazek dla ręki (z paskami)
         power: ScoringService.calculateCardPower(c),
         row: c.row,
         allowedRows: def.allowedRows

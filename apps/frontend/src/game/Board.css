@@ -62,18 +62,34 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.row-zone.is-placeable {
+.row-zone.is-placeable,
+.row-zone.is-spy-placeable {
   cursor: pointer;
   border-color: rgba(255, 215, 0, 0.6);
   background: rgba(255, 215, 0, 0.1);
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
-.row-zone.is-placeable:hover {
+.row-zone.is-placeable:hover,
+.row-zone.is-spy-placeable:hover {
   border-color: rgba(255, 215, 0, 0.9);
   background: rgba(255, 215, 0, 0.15);
   box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
   transform: scale(1.01);
+}
+
+/* Dla kart Spy na rzędy przeciwnika - czerwony kolor */
+.row-zone.is-spy-placeable {
+  cursor: pointer;
+  border-color: rgba(255, 100, 100, 0.6);
+  background: rgba(255, 100, 100, 0.1);
+  box-shadow: 0 0 20px rgba(255, 100, 100, 0.3);
+}
+
+.row-zone.is-spy-placeable:hover {
+  border-color: rgba(255, 100, 100, 0.9);
+  background: rgba(255, 100, 100, 0.15);
+  box-shadow: 0 0 30px rgba(255, 100, 100, 0.5);
 }
 
 /* Rzędy przeciwnika (górna połowa) - odwrócona kolejność */
@@ -114,20 +130,48 @@
   background: rgba(200, 150, 80, 0.7);
 }
 
+.row-card-wrapper {
+  position: relative;
+  flex: 0 0 auto;
+}
+
 .row-card {
   width: 60px;
   height: auto;
   border-radius: 6px;
-  flex: 0 0 auto;
+  display: block;
   border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s ease;
 }
 
-.row-card:hover {
+.row-card-wrapper:hover .row-card {
   transform: translateY(-4px) scale(1.05);
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
   border-color: rgba(255, 215, 0, 0.6);
+}
+
+.card-power-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(200, 50, 50, 0.95) 0%, rgba(150, 30, 30, 0.95) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  z-index: 10;
+  font-family: 'Arial', sans-serif;
 }
 
 .row-score {

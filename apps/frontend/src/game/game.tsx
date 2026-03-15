@@ -133,9 +133,34 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
   }
 
   function handleRowClick(row: RowId) {
-    console.log('handleRowClick:', { row, selectedCard, isMyTurn, iPassed })
-    if (!selectedCard || !isMyTurn || iPassed) {
-      console.log('Cannot place card - missing card, not my turn, or passed')
+    console.log('handleRowClick:', { row, selectedCard, isMyTurn, iPassed, myPlayer })
+    
+    // Sprawdź wszystkie warunki przed wysłaniem komendy
+    if (!selectedCard) {
+      console.log('Cannot place card - no card selected')
+      return
+    }
+    
+    if (!isMyTurn) {
+      console.log('Cannot place card - not my turn')
+      return
+    }
+    
+    if (iPassed) {
+      console.log('Cannot place card - already passed')
+      return
+    }
+    
+    if (!myPlayer || myPlayer.passed) {
+      console.log('Cannot place card - player has passed')
+      return
+    }
+    
+    // Sprawdź czy karta nadal jest w ręce
+    const cardInHand = myPlayer.hand.find(c => c.id === selectedCard.id)
+    if (!cardInHand) {
+      console.log('Cannot place card - card not in hand anymore')
+      setSelectedCardId(null) // Wyczyść wybór jeśli karta już nie jest w ręce
       return
     }
 
@@ -146,7 +171,7 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
       siege: 'SIEGE',
     }
 
-    console.log('Emitting play_card:', { cardId: selectedCard.id, row: rowMapping[row] })
+    console.log('Emitting play_card:', { cardId: selectedCard.id, row: rowMapping[row], isSpy: selectedCard.isSpy })
     const gameSocket = connectSocket()
     gameSocket.emit('play_card', {
       cardId: selectedCard.id,
@@ -243,9 +268,10 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
           <Board
             opponentRows={opponentRows}
             playerRows={rows}
-            canPlaceCard={Boolean(selectedCard) && isMyTurn && !iPassed}
+            canPlaceCard={Boolean(selectedCard) && isMyTurn && !iPassed && !selectedCard?.isSpy}
             selectedCardRows={selectedCard?.rows ?? []}
             onRowClick={handleRowClick}
+            selectedCardIsSpy={selectedCard?.isSpy ?? false}
           />
           <div className="player-label">Ty {iPassed && '(Spasowałeś)'}</div>
         </div>
@@ -265,7 +291,7 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
             <p className="preview-title">Wybrana karta</p>
 
             <img
-              src={selectedCard.src}
+              src={selectedCard.handSrc || selectedCard.src} // W podglądzie pokazuj kartę z ręki
               alt={selectedCard.id}
               className="preview-card"
             />

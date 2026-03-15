@@ -5,7 +5,8 @@ export interface CardDto {
   id: CardInstanceId;
   definitionId: string;
   name: string;
-  image?: string;
+  image?: string; // Obrazek dla planszy (bez pasków)
+  handImage?: string; // Obrazek dla ręki (z paskami) - jeśli brak, użyj image
   power: number;
   row?: Row; // Rząd na którym karta jest położona (undefined dla kart w ręce)
   allowedRows?: Row[]; // Możliwe rzędy na które można położyć kartę
