@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { INITIAL_HAND } from './cards'
-import type { BoardRows, RowId } from './types'
+import type { BoardRows, RowId, CardData } from './types'
 import { Hand } from './hand'
 import { Board } from './board'
 import './Game.css'
@@ -18,7 +18,7 @@ export function GameScreen() {
 
   const selectedCard = useMemo(
     () => hand.find((c) => c.id === selectedCardId) ?? null,
-    [hand, selectedCardId],
+    [hand, selectedCardId]
   )
 
   function handleSelectCard(id: string) {
@@ -28,29 +28,62 @@ export function GameScreen() {
   function handleRowClick(row: RowId) {
     if (!selectedCard) return
 
-    setHand((prev) => prev.filter((c) => c.id !== selectedCard.id))
+    const card = selectedCard
+
+    setHand((prev) => prev.filter((c) => c.id !== card.id))
+
     setRows((prev) => ({
       ...prev,
-      [row]: [...prev[row], selectedCard],
+      [row]: [...prev[row], card],
     }))
+
     setSelectedCardId(null)
   }
+
+  const playerScore =
+    rows.melee.reduce((s, c) => s + (c.power ?? 0), 0) +
+    rows.ranged.reduce((s, c) => s + (c.power ?? 0), 0) +
+    rows.siege.reduce((s, c) => s + (c.power ?? 0), 0)
 
   return (
     <div className="game-screen">
       <div className="game-main">
-        <Board rows={rows} canPlaceCard={Boolean(selectedCard)} onRowClick={handleRowClick} />
-        <Hand cards={hand} selectedCardId={selectedCardId} onSelectCard={handleSelectCard} />
+
+        <h2 className="player-score">Player score: {playerScore}</h2>
+
+        <Board
+          rows={rows}
+          canPlaceCard={Boolean(selectedCard)}
+          selectedCardRow={selectedCard?.row ?? null}
+          onRowClick={handleRowClick}
+        />
+
+        <Hand
+          cards={hand}
+          selectedCardId={selectedCardId}
+          onSelectCard={handleSelectCard}
+        />
+
       </div>
 
       <aside className="preview-panel">
         {selectedCard ? (
           <>
             <p className="preview-title">Wybrana karta</p>
-            <img src={selectedCard.src} alt={selectedCard.id} className="preview-card" />
+
+            <img
+              src={selectedCard.src}
+              alt={selectedCard.id}
+              className="preview-card"
+            />
+
+            <p>Moc karty: {selectedCard.power ?? 0}</p>
+            <p>Rząd: {selectedCard.row.toUpperCase()}</p>
           </>
         ) : (
-          <p className="preview-empty">Kliknij kartę w ręce, potem kliknij rząd.</p>
+          <p className="preview-empty">
+            Kliknij kartę w ręce, potem kliknij rząd.
+          </p>
         )}
       </aside>
     </div>
