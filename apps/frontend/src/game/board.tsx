@@ -8,20 +8,22 @@ function RowZone({
   className,
   canPlaceCard,
   onRowClick,
+  isOpponent = false,
 }: {
   rowId: RowId
   cards: BoardRows[RowId]
   className: string
   canPlaceCard: boolean
   onRowClick: (row: RowId) => void
+  isOpponent?: boolean
 }) {
   const rowScore = cards.reduce((sum, card) => sum + (card.power ?? 0), 0)
 
   return (
     <div
-      className={`player-row ${className} ${canPlaceCard ? 'is-placeable' : ''}`}
+      className={`row-zone ${isOpponent ? 'opponent-row' : 'player-row'} ${className} ${canPlaceCard ? 'is-placeable' : ''}`}
       onClick={() => {
-        if (canPlaceCard) {
+        if (canPlaceCard && !isOpponent) {
           onRowClick(rowId)
         }
       }}
@@ -43,14 +45,16 @@ function RowZone({
 }
 
 export function Board({
-  rows,
+  opponentRows,
+  playerRows,
   canPlaceCard,
-  selectedCardRow,
+  selectedCardRows,
   onRowClick,
 }: {
-  rows: BoardRows
+  opponentRows: BoardRows
+  playerRows: BoardRows
   canPlaceCard: boolean
-  selectedCardRow: RowId | null
+  selectedCardRows: RowId[]
   onRowClick: (row: RowId) => void
 }) {
   return (
@@ -58,31 +62,63 @@ export function Board({
       className="board"
       style={{ backgroundImage: `url(${boardImg})` }}
     >
-      <div className="enemy-half" />
-
-      <div className="player-half">
+      {/* Górna połowa - przeciwnik */}
+      <div className="enemy-half">
         <RowZone
-          rowId="melee"
-          cards={rows.melee}
+          rowId="siege"
+          cards={opponentRows.siege}
           className="row-1"
-          canPlaceCard={canPlaceCard && selectedCardRow === 'melee'}
-          onRowClick={onRowClick}
+          canPlaceCard={false}
+          onRowClick={() => {}}
+          isOpponent={true}
         />
 
         <RowZone
           rowId="ranged"
-          cards={rows.ranged}
+          cards={opponentRows.ranged}
           className="row-2"
-          canPlaceCard={canPlaceCard && selectedCardRow === 'ranged'}
+          canPlaceCard={false}
+          onRowClick={() => {}}
+          isOpponent={true}
+        />
+
+        <RowZone
+          rowId="melee"
+          cards={opponentRows.melee}
+          className="row-3"
+          canPlaceCard={false}
+          onRowClick={() => {}}
+          isOpponent={true}
+        />
+      </div>
+
+      {/* Dolna połowa - gracz */}
+      <div className="player-half">
+        <RowZone
+          rowId="melee"
+          cards={playerRows.melee}
+          className="row-1"
+          canPlaceCard={canPlaceCard && selectedCardRows.includes('melee')}
           onRowClick={onRowClick}
+          isOpponent={false}
+        />
+
+        <RowZone
+          rowId="ranged"
+          cards={playerRows.ranged}
+          className="row-2"
+          canPlaceCard={canPlaceCard && selectedCardRows.includes('ranged')}
+          onRowClick={onRowClick}
+          isOpponent={false}
         />
 
         <RowZone
           rowId="siege"
-          cards={rows.siege}
+          cards={playerRows.siege}
           className="row-3"
-          canPlaceCard={canPlaceCard && selectedCardRow === 'siege'}
+          canPlaceCard={canPlaceCard && selectedCardRows.includes('siege')}
           onRowClick={onRowClick}
+          isOpponent={false}
         />
       </div>
     </section>

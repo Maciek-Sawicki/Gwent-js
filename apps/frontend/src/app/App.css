@@ -1,10 +1,13 @@
 .app {
   min-height: 100vh;
   padding: 0px;
-  background: #1b120c;
+  background: linear-gradient(135deg, #1a0f08 0%, #2d1810 50%, #1a0f08 100%);
+  background-attachment: fixed;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .app-shell {
   min-height: 100vh;
-  background: #1b120c;
+  background: linear-gradient(135deg, #1a0f08 0%, #2d1810 50%, #1a0f08 100%);
+  background-attachment: fixed;
 }

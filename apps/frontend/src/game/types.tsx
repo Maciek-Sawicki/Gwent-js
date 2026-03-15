@@ -3,7 +3,7 @@ export type RowId = 'melee' | 'ranged' | 'siege'
 export type CardData = {
   id: string
   src: string
-  row: RowId
+  rows: RowId[] // Karta może być położona na wiele rzędów
   power: number
 }
 

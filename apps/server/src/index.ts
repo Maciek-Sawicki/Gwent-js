@@ -20,7 +20,7 @@ const io = new Server(server, {
 function createInitialState(): GameState {
   return {
     round: 1,
-    status: "IN_PROGRESS",
+    status: "WAITING",
     currentPlayer: "p1",
     players: {
       p1: {
@@ -91,22 +91,52 @@ io.on("connection", (socket) => {
       const initialState = createInitialState();
       engine = gameManager.createGame(gameId, initialState);
       engine.initializeDecks();
-      engine.startGame();
+      // NIE rozpoczynaj gry - czekaj na drugiego gracza
     }
 
     const state = engine.getState();
     console.log("Players sockets:", state.players.p1.socketId, state.players.p2.socketId);
     let playerId: "p1" | "p2";
+    let shouldStartGame = false;
 
-    if (!state.players.p1.socketId) {
+    // Sprawdź czy któryś z graczy ma już ten socket (reconnect)
+    if (state.players.p1.socketId === socket.id) {
+      playerId = "p1";
+      console.log(`Socket ${socket.id} reconnected as p1`);
+    } else if (state.players.p2.socketId === socket.id) {
+      playerId = "p2";
+      console.log(`Socket ${socket.id} reconnected as p2`);
+    } else if (!state.players.p1.socketId) {
+      // Pierwszy slot wolny
       playerId = "p1";
       state.players.p1.socketId = socket.id;
+      console.log(`Socket ${socket.id} joined as p1`);
     } else if (!state.players.p2.socketId) {
+      // Drugi slot wolny - teraz możemy rozpocząć grę!
       playerId = "p2";
       state.players.p2.socketId = socket.id;
+      console.log(`Socket ${socket.id} joined as p2 - starting game!`);
+      shouldStartGame = true;
     } else {
-      socket.emit("error", "Game is full");
-      return;
+      // Gra pełna - resetuj grę jeśli obaj gracze się rozłączyli
+      const p1Connected = state.players.p1.socketId && io.sockets.sockets.has(state.players.p1.socketId);
+      const p2Connected = state.players.p2.socketId && io.sockets.sockets.has(state.players.p2.socketId);
+      
+      if (!p1Connected && !p2Connected) {
+        // Wszyscy się rozłączyli - resetuj grę
+        console.log("All players disconnected, resetting game");
+        const initialState = createInitialState();
+        engine = gameManager.createGame(gameId, initialState);
+        engine.initializeDecks();
+        // NIE rozpoczynaj gry - czekaj na drugiego gracza
+        const newState = engine.getState();
+        playerId = "p1";
+        newState.players.p1.socketId = socket.id;
+        console.log(`Socket ${socket.id} joined as p1 (reset game)`);
+      } else {
+        socket.emit("error", "Game is full");
+        return;
+      }
     }
 
     socket.data.playerId = playerId;
@@ -115,13 +145,23 @@ io.on("connection", (socket) => {
     socket.join(gameId);
 
     gameManager.addSocket(gameId, socket.id);
+
+    // Jeśli dołączył drugi gracz, rozpocznij grę
+    if (shouldStartGame && state.status === "WAITING") {
+      console.log("Both players joined, starting game!");
+      engine.startGame();
+      state.status = "IN_PROGRESS";
+    }
+
     broadcastState(gameId);
 
-    console.log(`Socket ${socket.id} joined as ${playerId}`);
-
-    let dto = mapToDto(state);
+    const currentState = engine.getState();
+    let dto = mapToDto(currentState);
     if (!Array.isArray(dto.players)) dto.players = Object.values(dto.players);
 
+    // Wyślij informację do gracza który właśnie dołączył, który gracz to "on"
+    socket.emit("you_are_player", { playerId });
+    
     io.to(gameId).emit("state_update", dto);
   });
 
@@ -171,7 +211,20 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("client disconnected", socket.id);
-    const { gameId } = socket.data;
+    const { gameId, playerId } = socket.data;
+    
+    if (gameId && playerId) {
+      const engine = gameManager.getGame(gameId);
+      if (engine) {
+        const state = engine.getState();
+        // Wyczyść socketId gracza który się rozłączył
+        if (state.players[playerId]) {
+          state.players[playerId].socketId = undefined;
+          console.log(`Player ${playerId} disconnected, cleared socketId`);
+        }
+      }
+    }
+    
     gameManager.removeSocket(gameId, socket.id);
   });
 });
