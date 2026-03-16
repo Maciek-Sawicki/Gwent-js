@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { GameEngine } from "../../packages/game-engine/core/GameEngine";
-import { GameState } from "../../packages/game-engine/core/GameState";
-import { CardRegistrySetup } from "../../packages/game-engine/cards/CardRegistrySetup";
+import { GameEngine } from "../../../packages/game-engine/core/GameEngine";
+import { GameState } from "../../../packages/game-engine/core/GameState";
+import { CardRegistrySetup } from "../../../packages/game-engine/cards/CardRegistrySetup";
 
 
 describe("tight bond", () => {
