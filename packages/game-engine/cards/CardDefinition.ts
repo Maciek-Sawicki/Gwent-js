@@ -18,4 +18,6 @@ export interface CardDefinition {
   isHero?: boolean;
   isLeader?: boolean;
   leaderAbility?: (ctx: CardPlayContext) => void;
+  auraEffect?: (ctx: CardPlayContext) => void;
+
 }
