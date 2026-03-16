@@ -1,25 +1,25 @@
-import { GameState } from "./GameState"
-import { GameCommand } from "../../shared/commands/GameCommand"
-import { EventQueue } from "../events/EventQueue"
-import { CardRegistry } from "../cards/CardRegistry"
-import { Row } from "../../shared/types/Row"
-import { CardInstance } from "./CardInstance"
-import { PlayerState } from "./PlayerState"
-import { Modifier } from "../scoring/Modifier"
-import { ScoringService } from "../scoring/ScoringService"
-import { northernRealmsCards } from "../cards/definitions/northernRealmsCards"
-import { spyEffect } from "../effects/spy"
+import { GameState } from "./GameState";
+import { GameCommand } from "../../shared/commands/GameCommand";
+import { EventQueue } from "../events/EventQueue";
+import { CardRegistry } from "../cards/CardRegistry";
+import { Row } from "../../shared/types/Row";
+import { CardInstance } from "./CardInstance";
+import { PlayerState } from "./PlayerState";
+import { Modifier } from "../scoring/Modifier";
+import { ScoringService } from "../scoring/ScoringService";
+import { northernRealmsCards } from "../cards/definitions/northernRealmsCards";
+import { spyEffect } from "../effects/spy";
 
 export class GameEngine {
-  private state: GameState
-  private eventQueue = new EventQueue()
+  private state: GameState;
+  private eventQueue = new EventQueue();
 
   constructor(initialState: GameState) {
-    this.state = initialState
+    this.state = initialState;
   }
 
   getState(): GameState {
-    return this.state
+    return this.state;
   }
 
   // Ważny bug do naprawy
@@ -36,7 +36,6 @@ export class GameEngine {
   // Jeśli nie można, to rzucamy wyjątek, ale karta już została usunięta z ręki i nie wraca na nią.
   // Giga ważne do naprawy, bo inaczej gra jest niegrywalna
 
-
   dispatch(command: GameCommand): void {
     if (this.state.status === "FINISHED") {
       console.log("[ENGINE] Command ignored. Game is already finished.");
@@ -46,42 +45,47 @@ export class GameEngine {
     // Sprawdź czy gracz nie spasował przed wykonaniem komendy
     const player = this.state.players[command.playerId];
     if (player && player.passed && command.type === "PLAY_CARD") {
-      console.log(`[ENGINE] Command ignored. Player ${command.playerId} has already passed.`);
+      console.log(
+        `[ENGINE] Command ignored. Player ${command.playerId} has already passed.`,
+      );
       return;
     }
 
     switch (command.type) {
       case "PLAY_CARD":
-        console.log("[ENGINE] Trying to play cardId:", command.cardId, "by player:", command.playerId, "currentPlayer:", this.state.currentPlayer);
+        console.log(
+          "[ENGINE] Trying to play cardId:",
+          command.cardId,
+          "by player:",
+          command.playerId,
+          "currentPlayer:",
+          this.state.currentPlayer,
+        );
         try {
-          this.handlePlayCard(
-            command.playerId,
-            command.cardId,
-            command.row
-          )
+          this.handlePlayCard(command.playerId, command.cardId, command.row);
         } catch (error) {
           console.log("[ENGINE] Error playing card:", error);
           throw error;
         }
-        break
+        break;
       case "PASS":
-        this.handlePass(command.playerId)
-        break
+        this.handlePass(command.playerId);
+        break;
     }
-    this.processEvents()
+    this.processEvents();
   }
 
   private handlePlayCard(playerId: string, cardId: string, row: Row) {
     this.ensureTurn(playerId);
 
     const player = this.state.players[playerId];
-    
+
     // Sprawdź czy gracz nie spasował
     if (player.passed) {
       throw new Error("You have already passed");
     }
-    
-    const index = player.hand.findIndex(c => c.id === cardId);
+
+    const index = player.hand.findIndex((c) => c.id === cardId);
     if (index === -1) throw new Error("Card not in hand");
 
     const card = player.hand[index];
@@ -90,16 +94,16 @@ export class GameEngine {
     if (!definition.allowedRows.includes(row)) {
       throw new Error("Card cannot be played on this row");
     }
-    
+
     // Sprawdź czy to karta Spy - jeśli tak, połóż na planszę przeciwnika
     const isSpy = definition.onPlay === spyEffect;
     const targetPlayerId = isSpy ? this.getOpponentId(playerId) : playerId;
     const targetPlayer = this.state.players[targetPlayerId];
-    
+
     card.row = row;
     targetPlayer.board[row].push(card);
     player.hand.splice(index, 1);
-    
+
     // Przelicz efekty dla planszy na którą karta została położona
     this.recalculateRowEffects(targetPlayerId, row);
 
@@ -107,12 +111,14 @@ export class GameEngine {
       type: "CARD_PLAYED",
       playerId,
       cardId,
-      row
+      row,
     });
 
     // Jeśli graczowi skończyły się karty w ręce, automatycznie spasuje
     if (player.hand.length === 0) {
-      console.log(`[AUTO PASS] Player ${playerId} has no cards left, auto-passing`);
+      console.log(
+        `[AUTO PASS] Player ${playerId} has no cards left, auto-passing`,
+      );
       player.passed = true;
       this.checkRoundEnd();
     }
@@ -122,7 +128,7 @@ export class GameEngine {
 
   private getOpponentId(playerId: string): string {
     const playerIds = Object.keys(this.state.players);
-    return playerIds.find(id => id !== playerId) || playerId;
+    return playerIds.find((id) => id !== playerId) || playerId;
   }
 
   private handlePass(playerId: string) {
@@ -132,9 +138,9 @@ export class GameEngine {
       return;
     }
     player.passed = true;
-    console.log(`[PASS] Player ${playerId} has passed.`)
+    console.log(`[PASS] Player ${playerId} has passed.`);
     this.switchTurnToNextActivePlayer();
-    this.checkRoundEnd()
+    this.checkRoundEnd();
   }
 
   private switchTurnToNextActivePlayer() {
@@ -143,13 +149,19 @@ export class GameEngine {
 
     // Sprawdź czy aktualny gracz nie ma kart - jeśli nie ma, automatycznie spasuj
     const currentPlayer = this.state.players[this.state.currentPlayer];
-    if (currentPlayer && !currentPlayer.passed && currentPlayer.hand.length === 0) {
-      console.log(`[AUTO PASS] Player ${this.state.currentPlayer} has no cards left, auto-passing`);
+    if (
+      currentPlayer &&
+      !currentPlayer.passed &&
+      currentPlayer.hand.length === 0
+    ) {
+      console.log(
+        `[AUTO PASS] Player ${this.state.currentPlayer} has no cards left, auto-passing`,
+      );
       currentPlayer.passed = true;
     }
 
     // Sprawdź czy wszyscy gracze spasowali
-    const allPassed = playerIds.every(id => this.state.players[id].passed);
+    const allPassed = playerIds.every((id) => this.state.players[id].passed);
     if (allPassed) {
       console.log("[TURN] All players passed, ending round...");
       this.checkRoundEnd();
@@ -163,10 +175,14 @@ export class GameEngine {
 
       // Sprawdź czy następny gracz nie ma kart - jeśli nie ma, automatycznie spasuj
       if (!nextPlayer.passed && nextPlayer.hand.length === 0) {
-        console.log(`[AUTO PASS] Player ${nextPlayerId} has no cards left, auto-passing`);
+        console.log(
+          `[AUTO PASS] Player ${nextPlayerId} has no cards left, auto-passing`,
+        );
         nextPlayer.passed = true;
         // Sprawdź ponownie czy wszyscy spasowali
-        const allPassedNow = playerIds.every(id => this.state.players[id].passed);
+        const allPassedNow = playerIds.every(
+          (id) => this.state.players[id].passed,
+        );
         if (allPassedNow) {
           console.log("[TURN] All players passed, ending round...");
           this.checkRoundEnd();
@@ -197,65 +213,97 @@ export class GameEngine {
   }
 
   private switchTurn() {
-    const ids = Object.keys(this.state.players)
-    const currentIndex = ids.indexOf(this.state.currentPlayer)
-    const nextIndex = (currentIndex + 1) % ids.length
-    this.state.currentPlayer = ids[nextIndex]
+    const ids = Object.keys(this.state.players);
+    const currentIndex = ids.indexOf(this.state.currentPlayer);
+    const nextIndex = (currentIndex + 1) % ids.length;
+    this.state.currentPlayer = ids[nextIndex];
   }
 
   private processEvents() {
-    this.eventQueue.process(event => {
+    this.eventQueue.process((event) => {
       if (event.type === "CARD_PLAYED") {
-        const card = this.getCard(event.cardId)
-        const definition = CardRegistry.get(card.definitionId)
+        const card = this.getCard(event.cardId);
+        const definition = CardRegistry.get(card.definitionId);
         if (definition.onPlay) {
           definition.onPlay({
             engine: this,
             state: this.state,
             playerId: event.playerId,
             cardInstanceId: event.cardId,
-            row: event.row
-          })
-          console.log("onPlay triggered for", event.cardId, "definition", definition.id, "by player", event.playerId, "on row", event.row);
+            row: event.row,
+          });
+          console.log(
+            "onPlay triggered for",
+            event.cardId,
+            "definition",
+            definition.id,
+            "by player",
+            event.playerId,
+            "on row",
+            event.row,
+          );
         }
       }
-    })
+    });
   }
 
-recalculateRowEffects(playerId: string, row: Row) {
-  const cards = this.getRow(playerId, row);
-  
-  for (const card of cards) {
-    this.removeModifiersBySource(card.id, "fog");
-  }
+  recalculateRowEffects(playerId: string, row: Row) {
+    const cards = this.getRow(playerId, row);
 
-  for (const card of cards) {
-    const definition = CardRegistry.get(card.definitionId);
-    if (definition.isHero) continue;
-    if (definition.ongoing) {
-      definition.ongoing({
-        engine: this,
-        state: this.state,
-        playerId,
-        cardInstanceId: card.id,
-        row
+    const weatherSources = ["fog", "frost", "rain"];
+    for (const card of cards) {
+      for (const source of weatherSources) {
+        this.removeModifiersBySource(card.id, source);
+      }
+    }
+
+    for (const card of cards) {
+      const definition = CardRegistry.get(card.definitionId);
+      if (definition.isHero) continue;
+      if (definition.ongoing) {
+        definition.ongoing({
+          engine: this,
+          state: this.state,
+          playerId,
+          cardInstanceId: card.id,
+          row,
+        });
+      }
+    }
+
+    for (const card of cards) {
+      const definition = CardRegistry.get(card.definitionId);
+      if (definition.auraEffect) {
+        definition.auraEffect({
+          engine: this,
+          state: this.state,
+          playerId,
+          cardInstanceId: card.id,
+          row,
+        });
+      }
+    }
+
+    for (const card of cards) {
+      const definition = CardRegistry.get(card.definitionId);
+      if (definition.isHero) continue;
+
+      weatherSources.forEach((source) => {
+        if (
+          this.state.players[playerId].board[row].some(
+            (c) => CardRegistry.get(c.definitionId).id === source,
+          )
+        ) {
+          this.addModifier(card.id, {
+            id: `${source}_aura_${row}`,
+            source,
+            type: "SET",
+            value: 1,
+          });
+        }
       });
     }
   }
-
-  for (const card of cards) {
-    const definition = CardRegistry.get(card.definitionId);
-    if (definition.auraEffect) {
-      definition.auraEffect({
-        engine: this,
-        state: this.state,
-        playerId,
-        cardInstanceId: card.id,
-        row
-      });
-    }
-  }
-}
 
   createCardInstance(definitionId: string): CardInstance {
     const def = CardRegistry.get(definitionId);
@@ -264,108 +312,100 @@ recalculateRowEffects(playerId: string, row: Row) {
       definitionId,
       row: undefined,
       modifiers: [],
-      bondGroup: def.bondGroup // <-- dodajemy bondGroup do instancji
+      bondGroup: def.bondGroup, // <-- dodajemy bondGroup do instancji
     };
   }
 
   getCard(cardId: string): CardInstance {
     for (const player of Object.values(this.state.players)) {
       for (const row of Object.values(player.board)) {
-        const card = row.find(
-          (c: CardInstance) => c.id === cardId
-        )
-        if (card) return card
+        const card = row.find((c: CardInstance) => c.id === cardId);
+        if (card) return card;
       }
     }
-    throw new Error("Card not found")
+    throw new Error("Card not found");
   }
 
   getRow(playerId: string, row: Row): CardInstance[] {
-    return this.state.players[playerId].board[row]
+    return this.state.players[playerId].board[row];
   }
 
   getAllBoardCards(): CardInstance[] {
-    const cards: CardInstance[] = []
+    const cards: CardInstance[] = [];
     for (const player of Object.values(this.state.players)) {
       cards.push(
         ...player.board.MELEE,
         ...player.board.RANGED,
-        ...player.board.SIEGE
-      )
+        ...player.board.SIEGE,
+      );
     }
-    return cards
+    return cards;
   }
 
   destroyCard(cardId: string) {
     for (const player of Object.values(this.state.players)) {
       for (const rowName of ["MELEE", "RANGED", "SIEGE"] as Row[]) {
-        const row = player.board[rowName]
-        this.recalculateRowEffects(player.id, rowName)
-        const index = row.findIndex(
-          (c: CardInstance) => c.id === cardId
-        )
+        const row = player.board[rowName];
+        this.recalculateRowEffects(player.id, rowName);
+        const index = row.findIndex((c: CardInstance) => c.id === cardId);
         if (index !== -1) {
-          const [card] = row.splice(index, 1)
-          player.graveyard.push(card)
-          return
+          const [card] = row.splice(index, 1);
+          player.graveyard.push(card);
+          return;
         }
       }
     }
   }
 
   addModifier(cardId: string, modifier: Modifier) {
-    const card = this.getCard(cardId)
-    card.modifiers.push(modifier)
+    const card = this.getCard(cardId);
+    card.modifiers.push(modifier);
   }
 
   removeModifier(cardId: string, modifierId: string) {
-    const card = this.getCard(cardId)
-    card.modifiers = card.modifiers.filter(
-      m => m.id !== modifierId
-    )
+    const card = this.getCard(cardId);
+    card.modifiers = card.modifiers.filter((m) => m.id !== modifierId);
   }
 
   removeModifiersBySource(cardId: string, source: string) {
-    const card = this.getCard(cardId)
-    card.modifiers = card.modifiers.filter(
-      m => m.source !== source
-    )
+    const card = this.getCard(cardId);
+    card.modifiers = card.modifiers.filter((m) => m.source !== source);
   }
 
   getCardPower(card: CardInstance): number {
-    return ScoringService.calculateCardPower(card)
+    return ScoringService.calculateCardPower(card);
   }
 
   getRowPower(playerId: string, row: Row): number {
-    return ScoringService.calculateRowScore(this.getRow(playerId, row))
+    return ScoringService.calculateRowScore(this.getRow(playerId, row));
   }
 
   getPlayerScore(playerId: string): number {
-    return ScoringService.calculatePlayerScore(this.state.players[playerId])
+    return ScoringService.calculatePlayerScore(this.state.players[playerId]);
   }
 
   private resolveRoundWinner(): string[] {
-    const players = Object.values(this.state.players)
+    const players = Object.values(this.state.players);
 
-    const scored = players.map(p => ({
+    const scored = players.map((p) => ({
       id: p.id,
-      score: this.getPlayerScore(p.id)
-    }))
+      score: this.getPlayerScore(p.id),
+    }));
 
-    const maxScore = Math.max(...scored.map(s => s.score))
+    const maxScore = Math.max(...scored.map((s) => s.score));
 
-    return scored
-      .filter(s => s.score === maxScore)
-      .map(s => s.id)
+    return scored.filter((s) => s.score === maxScore).map((s) => s.id);
   }
 
   private checkRoundEnd() {
     if (this.state.status === "FINISHED") {
-      console.log("[ENGINE] Round end check ignored. Game is already finished.");
+      console.log(
+        "[ENGINE] Round end check ignored. Game is already finished.",
+      );
       return;
     }
 
-    const allPassed = Object.values(this.state.players).every(p => p.passed);
+    const allPassed = Object.values(this.state.players).every((p) => p.passed);
     if (!allPassed) return;
 
     console.log("[ROUND END] All players passed, resolving round...");
@@ -376,21 +416,25 @@ recalculateRowEffects(playerId: string, row: Row) {
     for (const winnerId of winners) {
       const player = this.state.players[winnerId];
       player.roundsWon++;
-      console.log(`[ROUND RESULT] ${winnerId} wins the round (total wins: ${player.roundsWon})`);
+      console.log(
+        `[ROUND RESULT] ${winnerId} wins the round (total wins: ${player.roundsWon})`,
+      );
     }
 
     const players = Object.values(this.state.players);
 
-    const someoneHasTwoWins = players.some(p => p.roundsWon >= 2);
+    const someoneHasTwoWins = players.some((p) => p.roundsWon >= 2);
     const reachedMaxRounds = this.state.round >= 3;
 
     if (someoneHasTwoWins || reachedMaxRounds) {
       this.state.status = "FINISHED";
 
-      const gameWinner = [...players].sort((a, b) => b.roundsWon - a.roundsWon)[0];
+      const gameWinner = [...players].sort(
+        (a, b) => b.roundsWon - a.roundsWon,
+      )[0];
 
       console.log(
-        `[GAME FINISHED] Winner: ${gameWinner.id} with ${gameWinner.roundsWon} rounds`
+        `[GAME FINISHED] Winner: ${gameWinner.id} with ${gameWinner.roundsWon} rounds`,
       );
 
       return;
@@ -404,53 +448,53 @@ recalculateRowEffects(playerId: string, row: Row) {
       player.board = {
         MELEE: [],
         RANGED: [],
-        SIEGE: []
-      }
-      player.passed = false
+        SIEGE: [],
+      };
+      player.passed = false;
     }
-    this.state.round++
+    this.state.round++;
 
-    const playerIds = Object.keys(this.state.players)
-    this.state.currentPlayer = playerIds[0]
+    const playerIds = Object.keys(this.state.players);
+    this.state.currentPlayer = playerIds[0];
 
-    this.state.status = "IN_PROGRESS"
+    this.state.status = "IN_PROGRESS";
   }
 
   drawCards(playerId: string, count: number) {
-    const player = this.state.players[playerId]
+    const player = this.state.players[playerId];
 
     for (let i = 0; i < count; i++) {
-      const card = player.deck.pop()
-      if (!card) break
+      const card = player.deck.pop();
+      if (!card) break;
 
-      player.hand.push(card)
+      player.hand.push(card);
     }
   }
 
   shuffleDeck(playerId: string) {
-    const deck = this.state.players[playerId].deck
+    const deck = this.state.players[playerId].deck;
 
     for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-        ;[deck[i], deck[j]] = [deck[j], deck[i]]
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
     }
   }
 
   startGame() {
     for (const player of Object.values(this.state.players)) {
-      this.shuffleDeck(player.id)
-      this.drawCards(player.id, 10)
+      this.shuffleDeck(player.id);
+      this.drawCards(player.id, 10);
     }
   }
 
   createDeck(definitionIds: string[]): CardInstance[] {
-    return definitionIds.map(id => this.createCardInstance(id))
+    return definitionIds.map((id) => this.createCardInstance(id));
   }
 
   createNorthernRealmsDeck(): CardInstance[] {
     // Wyklucz leaderów z talii (są oddzielnie)
-    const nonLeaderCards = northernRealmsCards.filter(card => !card.isLeader);
-    
+    const nonLeaderCards = northernRealmsCards.filter((card) => !card.isLeader);
+
     // Utwórz pulę 40 kart (możemy mieć duplikaty jeśli potrzeba)
     // Jeśli mamy mniej niż 40 kart, powtarzamy karty
     const deck: CardInstance[] = [];
@@ -460,7 +504,7 @@ recalculateRowEffects(playerId: string, row: Row) {
         deck.push(this.createCardInstance(card.id));
       }
     }
-    
+
     return deck;
   }
 
@@ -472,31 +516,45 @@ recalculateRowEffects(playerId: string, row: Row) {
    * - Spy (Prince Stennis, Sigismund Dijkstra, Thaler)
    * - Medic (Dun Banner Medic)
    */
-  createDemonstrationDecks(): { player1: CardInstance[], player2: CardInstance[] } {
+  createDemonstrationDecks(): {
+    player1: CardInstance[];
+    player2: CardInstance[];
+  } {
     // Karty pokazujące efekty:
     const tightBondCards = [
-      "balista_1", "balista_2", // Tight Bond - 2 karty (SIEGE)
-      "catapult_1", "catapult_2", // Tight Bond - 2 karty (SIEGE)
-      "blue_stripes_commando_1", "blue_stripes_commando_2", "blue_stripes_commando_3", // Tight Bond - 3 karty (MELEE)
-      "trebuchet_1", "trebuchet_2", // Tight Bond - 2 karty (SIEGE)
-      "poor_fucking_infantry_1", "poor_fucking_infantry_2", "poor_fucking_infantry_3", // Tight Bond - 3 karty (MELEE)
-      "crinfrid_reavers_dragon_hunter_1", "crinfrid_reavers_dragon_hunter_2", "crinfrid_reavers_dragon_hunter_3", // Tight Bond - 3 karty (RANGED)
+      "balista_1",
+      "balista_2", // Tight Bond - 2 karty (SIEGE)
+      "catapult_1",
+      "catapult_2", // Tight Bond - 2 karty (SIEGE)
+      "blue_stripes_commando_1",
+      "blue_stripes_commando_2",
+      "blue_stripes_commando_3", // Tight Bond - 3 karty (MELEE)
+      "trebuchet_1",
+      "trebuchet_2", // Tight Bond - 2 karty (SIEGE)
+      "poor_fucking_infantry_1",
+      "poor_fucking_infantry_2",
+      "poor_fucking_infantry_3", // Tight Bond - 3 karty (MELEE)
+      "crinfrid_reavers_dragon_hunter_1",
+      "crinfrid_reavers_dragon_hunter_2",
+      "crinfrid_reavers_dragon_hunter_3", // Tight Bond - 3 karty (RANGED)
     ];
-    
+
     const moraleBoostCards = [
-      "keadweni_siege_expert_1", "keadweni_siege_expert_2", "keadweni_siege_expert_3", // Morale Boost - 3 karty (SIEGE)
+      "keadweni_siege_expert_1",
+      "keadweni_siege_expert_2",
+      "keadweni_siege_expert_3", // Morale Boost - 3 karty (SIEGE)
     ];
-    
+
     const spyCards = [
       "prince_stennis", // Spy (MELEE)
       "sigismund_dijkstra", // Spy (MELEE)
       "thaler", // Spy (SIEGE)
     ];
-    
+
     const medicCards = [
       "dun_banner_medic", // Medic (SIEGE)
     ];
-    
+
     // Pozostałe karty do wypełnienia talii
     const otherCards = [
       "dethmold",
@@ -504,17 +562,19 @@ recalculateRowEffects(playerId: string, row: Row) {
       "john_natalis",
       "keira_metz",
       "philippa_eilhart",
-      "redanian_foot_soldier_1", "redanian_foot_soldier_2",
+      "redanian_foot_soldier_1",
+      "redanian_foot_soldier_2",
       "sabrina_glevissig",
       "shelden_skaggs",
-      "siege_tower_1", "siege_tower_2",
+      "siege_tower_1",
+      "siege_tower_2",
       "siegfried_of_denesle",
       "sile_de_bruyne",
       "vernon_roche",
       "ves",
       "yarpen_zigrin",
     ];
-    
+
     // Talia gracza 1 (20 kart) - zawiera wszystkie efekty
     const player1Deck: CardInstance[] = [
       // Tight Bond przykłady (można pokazać efekt z 2 kartami)
@@ -543,7 +603,7 @@ recalculateRowEffects(playerId: string, row: Row) {
       this.createCardInstance("vernon_roche"),
       this.createCardInstance("ves"),
     ];
-    
+
     // Talia gracza 2 (20 kart) - zawiera wszystkie efekty
     const player2Deck: CardInstance[] = [
       // Tight Bond przykłady
@@ -571,16 +631,16 @@ recalculateRowEffects(playerId: string, row: Row) {
       this.createCardInstance("dethmold"), // Duplikat dla wypełnienia
       this.createCardInstance("keira_metz"), // Duplikat dla wypełnienia
     ];
-    
+
     return {
       player1: player1Deck,
-      player2: player2Deck
+      player2: player2Deck,
     };
   }
 
   initializeDecks() {
     const playerIds = Object.keys(this.state.players);
-    
+
     if (playerIds.length >= 2) {
       // Użyj stałych talii z kartami pokazującymi wszystkie efekty
       const decks = this.createDemonstrationDecks();
@@ -602,18 +662,18 @@ recalculateRowEffects(playerId: string, row: Row) {
   }
 
   mulliganCard(playerId: string, cardId: string) {
-    const player = this.state.players[playerId]
+    const player = this.state.players[playerId];
     if (player.mulligansUsed >= 2) {
-      throw new Error("No mulligans left")
+      throw new Error("No mulligans left");
     }
-    const index = player.hand.findIndex(c => c.id === cardId)
+    const index = player.hand.findIndex((c) => c.id === cardId);
     if (index === -1) {
-      throw new Error("Card not in hand")
+      throw new Error("Card not in hand");
     }
-    const [card] = player.hand.splice(index, 1)
-    player.deck.push(card)
-    this.shuffleDeck(playerId)
-    this.drawCards(playerId, 1)
-    player.mulligansUsed++
+    const [card] = player.hand.splice(index, 1);
+    player.deck.push(card);
+    this.shuffleDeck(playerId);
+    this.drawCards(playerId, 1);
+    player.mulligansUsed++;
   }
 }

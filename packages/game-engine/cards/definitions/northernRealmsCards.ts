@@ -4,6 +4,8 @@ import { medicEffect } from "../../effects/medic";
 import { moraleBoostEffect } from "../../effects/moraleBoost";
 import { spyEffect } from "../../effects/spy";
 import { fogEffect } from "../../effects/fogEffect";  
+import { frostEffect } from "../../effects/frostEffect";
+import { rainEffect } from "../../effects/rainEffect";
 
 export const northernRealmsCards: CardDefinition[] = [
   {
@@ -475,5 +477,25 @@ export const northernRealmsCards: CardDefinition[] = [
   image: "/assets/cards/board/Fog.png",
   handImage: "/assets/cards/hand/Fog.png",
   auraEffect: fogEffect
+},
+{
+  id: "frost",
+  name: "Frost",
+  basePower: 0,
+  allowedRows: ["RANGED"],
+  faction: "NEUTRAL",
+  image: "/assets/cards/board/Frost.png",
+  handImage: "/assets/cards/hand/Frost.png",
+  auraEffect: frostEffect
+},
+{
+  id: "rain",
+  name: "Rain",
+  basePower: 0,
+  allowedRows: ["SIEGE"],
+  faction: "NEUTRAL",
+  image: "/assets/cards/board/Rain.png",
+  handImage: "/assets/cards/hand/Rain.png",
+  auraEffect: rainEffect
 }
 ];  
