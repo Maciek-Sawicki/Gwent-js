@@ -3,6 +3,7 @@ import { tightBondEffect } from "../../effects/tightBond";
 import { medicEffect } from "../../effects/medic";
 import { moraleBoostEffect } from "../../effects/moraleBoost";
 import { spyEffect } from "../../effects/spy";
+import { fogEffect } from "../../effects/fogEffect";  
 
 export const northernRealmsCards: CardDefinition[] = [
   {
@@ -465,4 +466,14 @@ export const northernRealmsCards: CardDefinition[] = [
     image: "/assets/cards/board/Yarpen Zigrin.png",
     handImage: "/assets/cards/hand/Yarpen Zigrin.png",
   },
+  {
+  id: "fog",
+  name: "Fog",
+  basePower: 0,
+  allowedRows: ["MELEE"],
+  faction: "NEUTRAL",
+  image: "/assets/cards/board/Fog.png",
+  handImage: "/assets/cards/hand/Fog.png",
+  auraEffect: fogEffect
+}
 ];  

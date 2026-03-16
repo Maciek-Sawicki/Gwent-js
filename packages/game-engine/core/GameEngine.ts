@@ -222,27 +222,40 @@ export class GameEngine {
     })
   }
 
-  recalculateRowEffects(playerId: string, row: Row) {
-    const cards = this.getRow(playerId, row);
-    for (const card of cards) {
-      this.removeModifiersBySource(card.id, "tightBond");
-    }
-    for (const card of cards) {
-      const definition = CardRegistry.get(card.definitionId);
+recalculateRowEffects(playerId: string, row: Row) {
+  const cards = this.getRow(playerId, row);
+  
+  for (const card of cards) {
+    this.removeModifiersBySource(card.id, "fog");
+  }
 
-      if (definition.isHero) continue
-
-      if (definition.ongoing) {
-        definition.ongoing({
-          engine: this,
-          state: this.state,
-          playerId,
-          cardInstanceId: card.id,
-          row
-        });
-      }
+  for (const card of cards) {
+    const definition = CardRegistry.get(card.definitionId);
+    if (definition.isHero) continue;
+    if (definition.ongoing) {
+      definition.ongoing({
+        engine: this,
+        state: this.state,
+        playerId,
+        cardInstanceId: card.id,
+        row
+      });
     }
   }
+
+  for (const card of cards) {
+    const definition = CardRegistry.get(card.definitionId);
+    if (definition.auraEffect) {
+      definition.auraEffect({
+        engine: this,
+        state: this.state,
+        playerId,
+        cardInstanceId: card.id,
+        row
+      });
+    }
+  }
+}
 
   createCardInstance(definitionId: string): CardInstance {
     const def = CardRegistry.get(definitionId);
