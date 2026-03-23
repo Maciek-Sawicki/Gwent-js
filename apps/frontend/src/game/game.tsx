@@ -232,7 +232,9 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
       <div className="game-screen">
         <div className="loading-screen">
           <p>Łączenie z grą...</p>
-          <p className="game-code-display">Kod gry: {gameId}</p>
+          <p className="game-code-display" data-testid="game-code">
+            {gameId}
+          </p>
           {isWaiting && (
             <div className="waiting-message">
               <p className="waiting-text">
