@@ -1,12 +1,9 @@
-import { defineConfig, devices } from '@playwright/test';
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { defineConfig, devices } from '@playwright/test'
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const serverDir = path.resolve(__dirname, '../server')
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -52,14 +49,27 @@ export default defineConfig({
     // },
   ],
 
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-    env: {
-      ...process.env,
-      VITE_SOCKET_URL: process.env.VITE_SOCKET_URL ?? 'http://127.0.0.1:4000',
+  webServer: [
+    {
+      command: 'npm run dev',
+      cwd: serverDir,
+      url: 'http://127.0.0.1:4000/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      env: {
+        ...process.env,
+        PORT: process.env.PORT ?? '4000',
+      },
     },
-  },
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:5173',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      env: {
+        ...process.env,
+        VITE_SOCKET_URL: process.env.VITE_SOCKET_URL ?? 'http://127.0.0.1:4000',
+      },
+    },
+  ],
 })
