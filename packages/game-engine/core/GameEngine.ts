@@ -10,9 +10,12 @@ import { ScoringService } from "../scoring/ScoringService"
 import { northernRealmsCards } from "../cards/definitions/northernRealmsCards"
 import { spyEffect } from "../effects/spy"
 
+const isSpyTestMode = process.env.TEST_SPY_MODE === 'true';
+
 export class GameEngine {
   private state: GameState
   private eventQueue = new EventQueue()
+  
 
   constructor(initialState: GameState) {
     this.state = initialState
@@ -75,12 +78,12 @@ export class GameEngine {
     this.ensureTurn(playerId);
 
     const player = this.state.players[playerId];
-    
+
     // Sprawdź czy gracz nie spasował
     if (player.passed) {
       throw new Error("You have already passed");
     }
-    
+
     const index = player.hand.findIndex(c => c.id === cardId);
     if (index === -1) throw new Error("Card not in hand");
 
@@ -90,16 +93,16 @@ export class GameEngine {
     if (!definition.allowedRows.includes(row)) {
       throw new Error("Card cannot be played on this row");
     }
-    
+
     // Sprawdź czy to karta Spy - jeśli tak, połóż na planszę przeciwnika
     const isSpy = definition.onPlay === spyEffect;
     const targetPlayerId = isSpy ? this.getOpponentId(playerId) : playerId;
     const targetPlayer = this.state.players[targetPlayerId];
-    
+
     card.row = row;
     targetPlayer.board[row].push(card);
     player.hand.splice(index, 1);
-    
+
     // Przelicz efekty dla planszy na którą karta została położona
     this.recalculateRowEffects(targetPlayerId, row);
 
@@ -437,7 +440,7 @@ export class GameEngine {
   createNorthernRealmsDeck(): CardInstance[] {
     // Wyklucz leaderów z talii (są oddzielnie)
     const nonLeaderCards = northernRealmsCards.filter(card => !card.isLeader);
-    
+
     // Utwórz pulę 40 kart (możemy mieć duplikaty jeśli potrzeba)
     // Jeśli mamy mniej niż 40 kart, powtarzamy karty
     const deck: CardInstance[] = [];
@@ -447,7 +450,7 @@ export class GameEngine {
         deck.push(this.createCardInstance(card.id));
       }
     }
-    
+
     return deck;
   }
 
@@ -469,21 +472,21 @@ export class GameEngine {
       "poor_fucking_infantry_1", "poor_fucking_infantry_2", "poor_fucking_infantry_3", // Tight Bond - 3 karty (MELEE)
       "crinfrid_reavers_dragon_hunter_1", "crinfrid_reavers_dragon_hunter_2", "crinfrid_reavers_dragon_hunter_3", // Tight Bond - 3 karty (RANGED)
     ];
-    
+
     const moraleBoostCards = [
       "keadweni_siege_expert_1", "keadweni_siege_expert_2", "keadweni_siege_expert_3", // Morale Boost - 3 karty (SIEGE)
     ];
-    
+
     const spyCards = [
       "prince_stennis", // Spy (MELEE)
       "sigismund_dijkstra", // Spy (MELEE)
       "thaler", // Spy (SIEGE)
     ];
-    
+
     const medicCards = [
       "dun_banner_medic", // Medic (SIEGE)
     ];
-    
+
     // Pozostałe karty do wypełnienia talii
     const otherCards = [
       "dethmold",
@@ -501,7 +504,7 @@ export class GameEngine {
       "ves",
       "yarpen_zigrin",
     ];
-    
+
     // Talia gracza 1 (20 kart) - zawiera wszystkie efekty
     const player1Deck: CardInstance[] = [
       // Tight Bond przykłady (można pokazać efekt z 2 kartami)
@@ -519,18 +522,18 @@ export class GameEngine {
       this.createCardInstance("dun_banner_medic"), // Medic
       // Pozostałe karty (11 kart)
       this.createCardInstance("dethmold"),
-      this.createCardInstance("esterad_thyssen"),
-      this.createCardInstance("john_natalis"),
-      this.createCardInstance("keira_metz"),
-      this.createCardInstance("philippa_eilhart"),
-      this.createCardInstance("redanian_foot_soldier_1"),
-      this.createCardInstance("sabrina_glevissig"),
-      this.createCardInstance("siege_tower_1"),
-      this.createCardInstance("siegfried_of_denesle"),
-      this.createCardInstance("vernon_roche"),
-      this.createCardInstance("ves"),
+      // this.createCardInstance("esterad_thyssen"),
+      // this.createCardInstance("john_natalis"),
+      // this.createCardInstance("keira_metz"),
+      // this.createCardInstance("philippa_eilhart"),
+      // this.createCardInstance("redanian_foot_soldier_1"),
+      // this.createCardInstance("sabrina_glevissig"),
+      // this.createCardInstance("siege_tower_1"),
+      // this.createCardInstance("siegfried_of_denesle"),
+      // this.createCardInstance("vernon_roche"),
+      // this.createCardInstance("ves"),
     ];
-    
+
     // Talia gracza 2 (20 kart) - zawiera wszystkie efekty
     const player2Deck: CardInstance[] = [
       // Tight Bond przykłady
@@ -558,7 +561,58 @@ export class GameEngine {
       this.createCardInstance("dethmold"), // Duplikat dla wypełnienia
       this.createCardInstance("keira_metz"), // Duplikat dla wypełnienia
     ];
-    
+
+    return {
+      player1: player1Deck,
+      player2: player2Deck
+    };
+  }
+
+  createSpyTestDeck(): { player1: CardInstance[], player2: CardInstance[] } {
+    const spyCards = [
+      "prince_stennis", // Spy (MELEE)
+      "sigismund_dijkstra", // Spy (MELEE)
+      "thaler", // Spy (SIEGE)
+    ];
+
+    const player1Deck: CardInstance[] = [
+      this.createCardInstance("sigismund_dijkstra"),
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"),
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+    ]
+
+    const player2Deck: CardInstance[] = [
+      this.createCardInstance("sigismund_dijkstra"),
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"),
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+      this.createCardInstance("sigismund_dijkstra"), 
+    ]
+
     return {
       player1: player1Deck,
       player2: player2Deck
@@ -567,8 +621,16 @@ export class GameEngine {
 
   initializeDecks() {
     const playerIds = Object.keys(this.state.players);
-    
-    if (playerIds.length >= 2) {
+
+    if (isSpyTestMode){
+      const decks = this.createSpyTestDeck();
+      this.state.players[playerIds[0]].deck = decks.player1;
+      this.state.players[playerIds[1]].deck = decks.player2;
+
+      console.log("Tryb szpiega")
+    }
+
+    else if (playerIds.length >= 2) {
       // Użyj stałych talii z kartami pokazującymi wszystkie efekty
       const decks = this.createDemonstrationDecks();
       this.state.players[playerIds[0]].deck = decks.player1;
