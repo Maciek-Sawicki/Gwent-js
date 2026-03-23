@@ -1,3 +1,5 @@
+import type { CardDefinition } from "../CardDefinition"
+import type { CardPlayContext } from "../CardPlayContext"
 import { tightBondEffect } from "../../effects/tightBond"
 import { medicEffect } from "../../effects/medic"
 import { moraleBoostEffect } from "../../effects/moraleBoost"
@@ -172,7 +174,7 @@ export const northernRealmsCards: CardDefinition[] = [
     image: "/assets/cards/board/Foltest King Of Temeria.png",
     handImage: "/assets/cards/hand/Foltest King Of Temeria.png",
     isLeader: true,
-    leaderAbility: (ctx) => { }
+    leaderAbility: (_ctx: CardPlayContext) => { }
   },
   {
     id: "foltest_lord_commander_of_the_north",
@@ -183,7 +185,7 @@ export const northernRealmsCards: CardDefinition[] = [
     image: "/assets/cards/board/Foltest Lord Commander Of The North.png",
     handImage: "/assets/cards/hand/Foltest Lord Commander Of The North.png",
     isLeader: true,
-    leaderAbility: (ctx) => { }
+    leaderAbility: (_ctx: CardPlayContext) => { }
   },
   {
     id: "foltest_son_of_medell",
@@ -194,7 +196,7 @@ export const northernRealmsCards: CardDefinition[] = [
     image: "/assets/cards/board/Foltest Son Of Medell.png",
     handImage: "/assets/cards/hand/Foltest Son Of Medell.png",
     isLeader: true,
-    leaderAbility: (ctx) => { }
+    leaderAbility: (_ctx: CardPlayContext) => { }
   },
   {
     id: "foltest_the_siegemaster",
@@ -205,7 +207,7 @@ export const northernRealmsCards: CardDefinition[] = [
     image: "/assets/cards/board/Foltest The Siegemaster.png",
     handImage: "/assets/cards/hand/Foltest The Siegemaster.png",
     isLeader: true,
-    leaderAbility: (ctx) => { }
+    leaderAbility: (_ctx: CardPlayContext) => { }
   },
   {
     id: "foltest_the_steel-forged",
@@ -216,7 +218,7 @@ export const northernRealmsCards: CardDefinition[] = [
     image: "/assets/cards/board/Foltest The Steel-forged.png",
     handImage: "/assets/cards/hand/Foltest The Steel-forged.png",
     isLeader: true,
-    leaderAbility: (ctx) => { }
+    leaderAbility: (_ctx: CardPlayContext) => { }
   },
   {
     id: "john_natalis",

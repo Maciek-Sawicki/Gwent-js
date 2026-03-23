@@ -11,10 +11,16 @@ async function startGame(browser: Browser) {
   await p2.goto('http://localhost:5173');
 
   await p1.getByRole('button', { name: 'Utwórz grę' }).click();
-  const code = await p1.locator('[data-testid="game-code"]').textContent();
-  if (!code) throw new Error('Nie udało się pobrać kodu gry');
+  const codeLoc = p1
+    .getByTestId('loading-game-code-value')
+    .or(p1.getByTestId('game-code'));
+  await codeLoc.first().waitFor({ state: 'visible', timeout: 15_000 });
+  const code = (await codeLoc.first().textContent())?.trim();
+  if (!code || !/^\d{6}$/.test(code)) {
+    throw new Error(`Nie udało się pobrać 6-cyfrowego kodu gry, otrzymano: "${code}"`);
+  }
 
-  await p2.fill('input', code.trim());
+  await p2.getByTestId('home-game-code-input').fill(code);
   await p2.getByRole('button', { name: 'Dołącz do gry' }).click();
 
   await expect(p1.locator('.hand-card').first()).toBeVisible({ timeout: 10000 });

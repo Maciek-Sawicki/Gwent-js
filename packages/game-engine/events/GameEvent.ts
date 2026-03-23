@@ -1,4 +1,4 @@
-import { Row } from "@shared/types/Row";
+import type { Row } from "../../shared/types/Row";
 
 export interface CardPlayedEvent {
   type: "CARD_PLAYED";

@@ -5,8 +5,7 @@ import { Server } from "socket.io";
 import { gameManager } from "./managers/GameManager";
 import { mapToDto } from "./mappers/GameMapper";
 
-import { GameState } from "@repo/game-engine";
-import { CardRegistrySetup } from "@repo/game-engine/cards/CardRegistrySetup";
+import { GameState, CardRegistrySetup } from "@repo/game-engine";
 
 CardRegistrySetup();
 

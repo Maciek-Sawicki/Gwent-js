@@ -13,7 +13,10 @@ export function Hand({
   disabled?: boolean
 }) {
   return (
-    <section className={`hand ${disabled ? 'disabled' : ''}`}>
+    <section
+      className={`hand ${disabled ? 'disabled' : ''}`}
+      data-testid="player-hand"
+    >
       {cards.map((card) => (
         <div key={card.id} className="hand-card-wrapper">
           <img

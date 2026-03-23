@@ -1,7 +1,10 @@
-import { GameState, ScoringService } from "@repo/game-engine";
+import {
+  GameState,
+  ScoringService,
+  CardRegistry,
+  CardInstance,
+} from "@repo/game-engine";
 import { GameStateDto } from "@repo/shared";
-import { CardRegistry } from "@repo/game-engine/cards/CardRegistry";
-import { CardInstance } from "@repo/game-engine/core/CardInstance";
 
 export function mapToDto(state: GameState): GameStateDto {
   function mapCard(c: CardInstance) {

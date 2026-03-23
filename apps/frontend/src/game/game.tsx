@@ -230,14 +230,21 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
   if (!gameState || !myPlayer || isWaiting) {
     return (
       <div className="game-screen">
-        <div className="loading-screen">
-          <p>Łączenie z grą...</p>
-          <p className="game-code-display" data-testid="game-code">
-            {gameId}
+        <div className="loading-screen" data-testid="game-loading-screen">
+          <p data-testid="game-connecting-text">Łączenie z grą...</p>
+          <p className="game-code-display" data-testid="loading-game-code">
+            Kod gry: <span data-testid="loading-game-code-value">{gameId}</span>
+            <span
+              className="e2e-game-code-alias"
+              data-testid="game-code"
+              aria-hidden="true"
+            >
+              {gameId}
+            </span>
           </p>
           {isWaiting && (
-            <div className="waiting-message">
-              <p className="waiting-text">
+            <div className="waiting-message" data-testid="waiting-message">
+              <p className="waiting-text" data-testid="waiting-for-player-text">
                 {playersCount === 1 
                   ? "Czekasz na drugiego gracza..." 
                   : "Oczekiwanie na rozpoczęcie gry..."}
@@ -247,7 +254,12 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
           )}
           {error && <p className="error-message">Błąd: {error}</p>}
           {onLeaveGame && (
-            <button className="leave-button" onClick={onLeaveGame}>
+            <button
+              type="button"
+              className="leave-button"
+              data-testid="game-leave-button"
+              onClick={onLeaveGame}
+            >
               Opuść grę
             </button>
           )}
@@ -257,9 +269,9 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
   }
 
   return (
-    <div className="game-screen">
+    <div className="game-screen" data-testid="game-active-screen">
       <div className="game-main">
-        <div className="game-header">
+        <div className="game-header" data-testid="game-header">
           <div className="score-section">
             <div className="game-code-header">Kod gry: {gameId}</div>
             <h2 className="player-score">Twoje punkty: {playerScore}</h2>
@@ -270,21 +282,29 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
             </div>
           </div>
           
-          <div className="turn-status">
+          <div className="turn-status" data-testid="turn-status">
             {isMyTurn && !iPassed ? (
-              <div className="turn-indicator your-turn">Twoja tura</div>
+              <div className="turn-indicator your-turn" data-testid="turn-your-turn">
+                Twoja tura
+              </div>
             ) : iPassed ? (
-              <div className="turn-indicator passed">Spasowałeś</div>
+              <div className="turn-indicator passed" data-testid="turn-you-passed">
+                Spasowałeś
+              </div>
             ) : (
-              <div className="turn-indicator opponent-turn">Tura przeciwnika</div>
+              <div className="turn-indicator opponent-turn" data-testid="turn-opponent">
+                Tura przeciwnika
+              </div>
             )}
             {opponentPassed && !iPassed && (
               <div className="opponent-passed">Przeciwnik spasował</div>
             )}
           </div>
 
-          <button 
+          <button
+            type="button"
             className={`pass-button ${!isMyTurn || iPassed ? 'disabled' : ''}`}
+            data-testid="pass-button"
             onClick={handlePass}
             disabled={!isMyTurn || iPassed}
           >

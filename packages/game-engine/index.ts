@@ -1,7 +1,5 @@
 // 1️⃣ Rejestracja wszystkich kart – wystarczy import, efekt uboczny to dodanie do CardRegistry
 import "./effects/tightBond";
-// dodaj inne frakcje, np. Nilfgaard
-import "./cards/definitions/nilfgaardCards";
 import "./cards/definitions/northernRealmsCards";
 
 // 2️⃣ Eksport publicznych modułów silnika
@@ -12,6 +10,7 @@ export * from "./core/CardInstance";
 
 // karty i rejestracja
 export * from "./cards/CardRegistry";
+export * from "./cards/CardRegistrySetup";
 export * from "./cards/CardDefinition";
 
 // scoring / modyfikatory

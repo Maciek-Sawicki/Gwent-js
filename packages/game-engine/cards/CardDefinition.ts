@@ -1,4 +1,4 @@
-import { Row } from "@shared/types/Row";
+import type { Row } from "../../shared/types/Row";
 import { CardPlayContext } from "./CardPlayContext";
 
 export type Faction = "NILFGAARD"| "NORTHERN_REALMS" | "SCOIATAEL" | "MONSTERS" | "SKELLIGE" | "NEUTRAL" ;

@@ -1,5 +1,4 @@
-import { GameEngine } from "@repo/game-engine/core/GameEngine";
-import { GameState } from "@repo/game-engine/core/GameState";
+import { GameEngine, type GameState } from "@repo/game-engine";
 
 export class GameManager {
   private games = new Map<string, GameEngine>();

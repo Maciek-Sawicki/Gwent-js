@@ -36,11 +36,20 @@ export function HomePage({ onJoinGame }: HomePageProps) {
   return (
     <div className="home-page">
       <div className="home-container">
-        <h1 className="home-title">GWINT</h1>
-        <p className="home-subtitle">Wiedźmińska gra karciana</p>
+        <h1 className="home-title" data-testid="home-title">
+          GWINT
+        </h1>
+        <p className="home-subtitle" data-testid="home-subtitle">
+          Wiedźmińska gra karciana
+        </p>
 
         <div className="home-actions">
-          <button className="home-button create-button" onClick={handleCreateGame}>
+          <button
+            type="button"
+            className="home-button create-button"
+            data-testid="home-create-game"
+            onClick={handleCreateGame}
+          >
             Utwórz grę
           </button>
 
@@ -52,6 +61,7 @@ export function HomePage({ onJoinGame }: HomePageProps) {
             <input
               type="text"
               className="game-code-input"
+              data-testid="home-game-code-input"
               placeholder="Wprowadź kod gry (6 cyfr)"
               value={gameCode}
               onChange={(e) => {
@@ -65,14 +75,23 @@ export function HomePage({ onJoinGame }: HomePageProps) {
               }}
               maxLength={6}
             />
-            {error && <div className="error-message">{error}</div>}
-            <button className="home-button join-button" onClick={handleJoinGame}>
+            {error && (
+              <div className="error-message" data-testid="home-join-error">
+                {error}
+              </div>
+            )}
+            <button
+              type="button"
+              className="home-button join-button"
+              data-testid="home-join-game"
+              onClick={handleJoinGame}
+            >
               Dołącz do gry
             </button>
           </div>
         </div>
 
-        <div className="home-info">
+        <div className="home-info" data-testid="home-info">
           <p>• Utwórz grę, aby otrzymać unikalny kod</p>
           <p>• Podaj kod drugiemu graczowi, aby dołączył</p>
           <p>• Gra rozpocznie się automatycznie gdy dołączą 2 graczy</p>
