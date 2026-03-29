@@ -465,7 +465,7 @@ export class GameEngine {
   createDemonstrationDecks(): { player1: CardInstance[], player2: CardInstance[] } {
     // Karty pokazujące efekty:
     const tightBondCards = [
-      "balista_1", "balista_2", // Tight Bond - 2 karty (SIEGE)
+      "ballista_1", "ballista_2", // Tight Bond - 2 karty (SIEGE)
       "catapult_1", "catapult_2", // Tight Bond - 2 karty (SIEGE)
       "blue_stripes_commando_1", "blue_stripes_commando_2", "blue_stripes_commando_3", // Tight Bond - 3 karty (MELEE)
       "trebuchet_1", "trebuchet_2", // Tight Bond - 2 karty (SIEGE)
@@ -474,7 +474,7 @@ export class GameEngine {
     ];
 
     const moraleBoostCards = [
-      "keadweni_siege_expert_1", "keadweni_siege_expert_2", "keadweni_siege_expert_3", // Morale Boost - 3 karty (SIEGE)
+      "kaedweni_siege_expert_1", "kaedweni_siege_expert_2", "kaedweni_siege_expert_3", // Morale Boost - 3 karty (SIEGE)
     ];
 
     const spyCards = [
@@ -508,13 +508,13 @@ export class GameEngine {
     // Talia gracza 1 (20 kart) - zawiera wszystkie efekty
     const player1Deck: CardInstance[] = [
       // Tight Bond przykłady (można pokazać efekt z 2 kartami)
-      this.createCardInstance("balista_1"),
-      this.createCardInstance("balista_2"), // Tight Bond - razem = 12+12=24
+      this.createCardInstance("ballista_1"),
+      this.createCardInstance("ballista_2"), // Tight Bond - razem = 12+12=24
       this.createCardInstance("blue_stripes_commando_1"),
       this.createCardInstance("blue_stripes_commando_2"), // Tight Bond - razem = 8+8=16
       // Morale Boost
-      this.createCardInstance("keadweni_siege_expert_1"),
-      this.createCardInstance("keadweni_siege_expert_2"), // Morale Boost - każda daje +1 innym
+      this.createCardInstance("kaedweni_siege_expert_1"),
+      this.createCardInstance("kaedweni_siege_expert_2"), // Morale Boost - każda daje +1 innym
       // Spy
       this.createCardInstance("prince_stennis"), // Spy
       this.createCardInstance("sigismund_dijkstra"), // Spy
@@ -544,7 +544,7 @@ export class GameEngine {
       this.createCardInstance("poor_fucking_infantry_1"),
       this.createCardInstance("poor_fucking_infantry_2"), // Tight Bond - razem = 2+2=4
       // Morale Boost
-      this.createCardInstance("keadweni_siege_expert_3"), // Morale Boost
+      this.createCardInstance("kaedweni_siege_expert_3"), // Morale Boost
       // Spy
       this.createCardInstance("thaler"), // Spy
       // Pozostałe karty (12 kart)
