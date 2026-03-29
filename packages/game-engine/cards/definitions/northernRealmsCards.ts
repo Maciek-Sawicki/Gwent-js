@@ -9,22 +9,22 @@ import { spyEffect } from "../../effects/spy"
 
 export const northernRealmsCards: CardDefinition[] = [
   {
-    id: "balista_1",
-    name: "Balista",
+    id: "ballista_1",
+    name: "Ballista",
     basePower: 6,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Balista 1.png",
-    handImage: "/assets/cards/hand/Balista 1.png"
+    image: "/assets/cards/board/Ballista_1.png",
+    handImage: "/assets/cards/hand/Ballista_1.png"
   },
   {
-    id: "balista_2",
-    name: "Balista",
+    id: "ballista_2",
+    name: "Ballista",
     basePower: 6,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Balista 2.png",
-    handImage: "/assets/cards/hand/Balista 2.png"
+    image: "/assets/cards/board/Ballista_2.png",
+    handImage: "/assets/cards/hand/Ballista_2.png"
   },
   {
     id: "blue_stripes_commando_1",
@@ -32,8 +32,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Blue Stripes Commando 1.png",
-    handImage: "/assets/cards/hand/Blue Stripes Commando 1.png",
+    image: "/assets/cards/board/Blue_Stripes_Commando_1.png",
+    handImage: "/assets/cards/hand/Blue_Stripes_Commando_1.png",
     bondGroup: "blue_stripes_commando",
     ongoing: tightBondEffect
   },
@@ -43,8 +43,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Blue Stripes Commando 2.png",
-    handImage: "/assets/cards/hand/Blue Stripes Commando 2.png",
+    image: "/assets/cards/board/Blue_Stripes_Commando_2.png",
+    handImage: "/assets/cards/hand/Blue_Stripes_Commando_2.png",
     bondGroup: "blue_stripes_commando",
     ongoing: tightBondEffect
   },
@@ -54,8 +54,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Blue Stripes Commando 3.png",
-    handImage: "/assets/cards/hand/Blue Stripes Commando 3.png",
+    image: "/assets/cards/board/Blue_Stripes_Commando_3.png",
+    handImage: "/assets/cards/hand/Blue_Stripes_Commando_3.png",
     bondGroup: "blue_stripes_commando",
     ongoing: tightBondEffect
   },
@@ -65,8 +65,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Blue Stripes Commando 4.png",
-    handImage: "/assets/cards/hand/Blue Stripes Commando 4.png",
+    image: "/assets/cards/board/Blue_Stripes_Commando_4.png",
+    handImage: "/assets/cards/hand/Blue_Stripes_Commando_4.png",
     bondGroup: "blue_stripes_commando",
     ongoing: tightBondEffect
   },
@@ -76,8 +76,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Blue Stripes Commando 5.png",
-    handImage: "/assets/cards/hand/Blue Stripes Commando 5.png",
+    image: "/assets/cards/board/Blue_Stripes_Commando_5.png",
+    handImage: "/assets/cards/hand/Blue_Stripes_Commando_5.png",
     bondGroup: "blue_stripes_commando",
     ongoing: tightBondEffect
   },
@@ -87,8 +87,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 8,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Catapult 1.png",
-    handImage: "/assets/cards/hand/Catapult 1.png",
+    image: "/assets/cards/board/Catapult_1.png",
+    handImage: "/assets/cards/hand/Catapult_1.png",
     bondGroup: "catapult",
     ongoing: tightBondEffect
   },
@@ -98,8 +98,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 8,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Catapult 2.png",
-    handImage: "/assets/cards/hand/Catapult 2.png",
+    image: "/assets/cards/board/Catapult_2.png",
+    handImage: "/assets/cards/hand/Catapult_2.png",
     bondGroup: "catapult",
     ongoing: tightBondEffect
   },
@@ -109,8 +109,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Crinfrid Reavers Dragon Hunter 1.png",
-    handImage: "/assets/cards/hand/Crinfrid Reavers Dragon Hunter 1.png",
+    image: "/assets/cards/board/Crinfrid_Reavers_Dragon_Hunter_1.png",
+    handImage: "/assets/cards/hand/Crinfrid_Reavers_Dragon_Hunter_1.png",
     bondGroup: "crinfrid_reavers_dragon_hunter",
     ongoing: tightBondEffect
   },
@@ -120,8 +120,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Crinfrid Reavers Dragon Hunter 2.png",
-    handImage: "/assets/cards/hand/Crinfrid Reavers Dragon Hunter 2.png",
+    image: "/assets/cards/board/Crinfrid_Reavers_Dragon_Hunter_2.png",
+    handImage: "/assets/cards/hand/Crinfrid_Reavers_Dragon_Hunter_2.png",
     bondGroup: "crinfrid_reavers_dragon_hunter",
     ongoing: tightBondEffect
   },
@@ -131,8 +131,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Crinfrid Reavers Dragon Hunter 3.png",
-    handImage: "/assets/cards/hand/Crinfrid Reavers Dragon Hunter 3.png",
+    image: "/assets/cards/board/Crinfrid_Reavers_Dragon_Hunter_3.png",
+    handImage: "/assets/cards/hand/Crinfrid_Reavers_Dragon_Hunter_3.png",
     bondGroup: "crinfrid_reavers_dragon_hunter",
     ongoing: tightBondEffect
   },
@@ -151,8 +151,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Dun Banner Medic.png",
-    handImage: "/assets/cards/hand/Dun Banner Medic.png",
+    image: "/assets/cards/board/Dun_Banner_Medic.png",
+    handImage: "/assets/cards/hand/Dun_Banner_Medic.png",
     onPlay: medicEffect
   },
   {
@@ -161,8 +161,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 10,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Esterad Thyssen.png",
-    handImage: "/assets/cards/hand/Esterad Thyssen.png",
+    image: "/assets/cards/board/Esterad_Thyssen.png",
+    handImage: "/assets/cards/hand/Esterad_Thyssen.png",
     isHero: true
   },
   {
@@ -171,8 +171,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 0,
     allowedRows: [],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Foltest King Of Temeria.png",
-    handImage: "/assets/cards/hand/Foltest King Of Temeria.png",
+    image: "/assets/cards/board/Foltest_King_Of_Temeria.png",
+    handImage: "/assets/cards/hand/Foltest_King_Of_Temeria.png",
     isLeader: true,
     leaderAbility: (_ctx: CardPlayContext) => { }
   },
@@ -182,8 +182,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 0,
     allowedRows: [],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Foltest Lord Commander Of The North.png",
-    handImage: "/assets/cards/hand/Foltest Lord Commander Of The North.png",
+    image: "/assets/cards/board/Foltest_Lord_Commander_Of_The_North.png",
+    handImage: "/assets/cards/hand/Foltest_Lord_Commander_Of_The_North.png",
     isLeader: true,
     leaderAbility: (_ctx: CardPlayContext) => { }
   },
@@ -193,8 +193,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 0,
     allowedRows: [],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Foltest Son Of Medell.png",
-    handImage: "/assets/cards/hand/Foltest Son Of Medell.png",
+    image: "/assets/cards/board/Foltest_Son_Of_Medell.png",
+    handImage: "/assets/cards/hand/Foltest_Son_Of_Medell.png",
     isLeader: true,
     leaderAbility: (_ctx: CardPlayContext) => { }
   },
@@ -204,8 +204,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 0,
     allowedRows: [],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Foltest The Siegemaster.png",
-    handImage: "/assets/cards/hand/Foltest The Siegemaster.png",
+    image: "/assets/cards/board/Foltest_the_Siegemaster.png ",
+    handImage: "/assets/cards/hand/Foltest_the_Siegemaster.png ",
     isLeader: true,
     leaderAbility: (_ctx: CardPlayContext) => { }
   },
@@ -215,8 +215,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 0,
     allowedRows: [],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Foltest The Steel-forged.png",
-    handImage: "/assets/cards/hand/Foltest The Steel-forged.png",
+    image: "/assets/cards/board/Foltest_the_Steel-Forged.png ",
+    handImage: "/assets/cards/hand/Foltest_the_Steel-Forged.png ",
     isLeader: true,
     leaderAbility: (_ctx: CardPlayContext) => { }
   },
@@ -226,38 +226,38 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 10,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/John Natalis.png",
-    handImage: "/assets/cards/hand/John Natalis.png",
+    image: "/assets/cards/board/John_Natalis.png",
+    handImage: "/assets/cards/hand/John_Natalis.png",
     isHero: true
   },
   {
-    id: "keadweni_siege_expert_1",
-    name: "Keadweni Siege Expert",
+    id: "kaedweni_siege_expert_1",
+    name: "Kaedweni Siege Expert",
     basePower: 1,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Keadweni Siege Expert 1.png",
-    handImage: "/assets/cards/hand/Keadweni Siege Expert 1.png",
+    image: "/assets/cards/board/Kaedweni_Siege_Expert_1.png",
+    handImage: "/assets/cards/hand/Kaedweni_Siege_Expert_1.png",
     ongoing: moraleBoostEffect
   },
   {
-    id: "keadweni_siege_expert_2",
-    name: "Keadweni Siege Expert",
+    id: "kaedweni_siege_expert_2",
+    name: "Kaedweni Siege Expert",
     basePower: 1,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Keadweni Siege Expert 2.png",
-    handImage: "/assets/cards/hand/Keadweni Siege Expert 2.png",
+    image: "/assets/cards/board/Kaedweni_Siege_Expert_2.png",
+    handImage: "/assets/cards/hand/Kaedweni_Siege_Expert_2.png",
     ongoing: moraleBoostEffect
   },
   {
-    id: "keadweni_siege_expert_3",
-    name: "Keadweni Siege Expert",
+    id: "kaedweni_siege_expert_3",
+    name: "Kaedweni Siege Expert",
     basePower: 1,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Keadweni Siege Expert 3.png",
-    handImage: "/assets/cards/hand/Keadweni Siege Expert 3.png",
+    image: "/assets/cards/board/Kaedweni_Siege_Expert_3.png",
+    handImage: "/assets/cards/hand/Kaedweni_Siege_Expert_3.png",
     ongoing: moraleBoostEffect
   },
   {
@@ -266,8 +266,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Keira Metz.png",
-    handImage: "/assets/cards/hand/Keira Metz.png",
+    image: "/assets/cards/board/Keira_Metz.png",
+    handImage: "/assets/cards/hand/Keira_Metz.png",
   },
   {
     id: "philippa_eilhart",
@@ -275,8 +275,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 10,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Philippa Eilhart.png",
-    handImage: "/assets/cards/hand/Philippa Eilhart.png",
+    image: "/assets/cards/board/Philippa_Eilhart.png",
+    handImage: "/assets/cards/hand/Philippa_Eilhart.png",
     isHero: true
   },
   {
@@ -285,8 +285,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 1,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Poor Fucking Infantry 1.png",
-    handImage: "/assets/cards/hand/Poor Fucking Infantry 1.png",
+    image: "/assets/cards/board/Poor_Fucking_Infantry_1.png",
+    handImage: "/assets/cards/hand/Poor_Fucking_Infantry_1.png",
     ongoing: tightBondEffect
   },
   {
@@ -295,8 +295,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 1,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Poor Fucking Infantry 2.png",
-    handImage: "/assets/cards/hand/Poor Fucking Infantry 2.png",
+    image: "/assets/cards/board/Poor_Fucking_Infantry_2.png",
+    handImage: "/assets/cards/hand/Poor_Fucking_Infantry_2.png",
     ongoing: tightBondEffect
   },
   {
@@ -305,8 +305,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 1,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Poor Fucking Infantry 3.png",
-    handImage: "/assets/cards/hand/Poor Fucking Infantry 3.png",
+    image: "/assets/cards/board/Poor_Fucking_Infantry_3.png",
+    handImage: "/assets/cards/hand/Poor_Fucking_Infantry_3.png",
     ongoing: tightBondEffect
   },
   {
@@ -315,8 +315,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Prince Stennis.png",
-    handImage: "/assets/cards/hand/Prince Stennis.png",
+    image: "/assets/cards/board/Prince_Stennis.png",
+    handImage: "/assets/cards/hand/Prince_Stennis.png",
     onPlay: spyEffect
   },
   {
@@ -325,8 +325,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 1,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Redanian Foot Soldier 1.png",
-    handImage: "/assets/cards/hand/Redanian Foot Soldier 1.png",
+    image: "/assets/cards/board/Redanian_Foot_Soldier_1.png",
+    handImage: "/assets/cards/hand/Redanian_Foot_Soldier_1.png",
   },
   {
     id: "redanian_foot_soldier_2",
@@ -334,8 +334,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 1,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Redanian Foot Soldier 2.png",
-    handImage: "/assets/cards/hand/Redanian Foot Soldier 2.png",
+    image: "/assets/cards/board/Redanian_Foot_Soldier_2.png",
+    handImage: "/assets/cards/hand/Redanian_Foot_Soldier_2.png",
   },
   {
     id: "sabrina_glevissig",
@@ -343,8 +343,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Sabrina Glevissig.png",
-    handImage: "/assets/cards/hand/Sabrina Glevissig.png",
+    image: "/assets/cards/board/Sabrina_Glevissig.png",
+    handImage: "/assets/cards/hand/Sabrina_Glevissig.png",
   },
   {
     id: "shelden_skaggs",
@@ -352,8 +352,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Sheldon Skaggs.png",
-    handImage: "/assets/cards/hand/Sheldon Skaggs.png",
+    image: "/assets/cards/board/Shelden_Skaggs.png",
+    handImage: "/assets/cards/hand/Shelden_Skaggs.png",
   },
   {
     id: "siege_tower_1",
@@ -361,8 +361,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 6,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Siege Tower 1.png",
-    handImage: "/assets/cards/hand/Siege Tower 1.png",
+    image: "/assets/cards/board/Siege_Tower_1.png",
+    handImage: "/assets/cards/hand/Siege_Tower_1.png",
   },
   {
     id: "siege_tower_2",
@@ -370,8 +370,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 6,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Siege Tower 2.png",
-    handImage: "/assets/cards/hand/Siege Tower 2.png",
+    image: "/assets/cards/board/Siege_Tower_2.png",
+    handImage: "/assets/cards/hand/Siege_Tower_2.png",
   },
   {
     id: "siegfried_of_denesle",
@@ -379,8 +379,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Siegfried Of Denesle.png",
-    handImage: "/assets/cards/hand/Siegfried Of Denesle.png",
+    image: "/assets/cards/board/Siegfried_of_Denesle.png",
+    handImage: "/assets/cards/hand/Siegfried_of_Denesle.png",
   },
   {
     id: "sigismund_dijkstra",
@@ -388,8 +388,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 4,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Sigismund Dijkstra.png",
-    handImage: "/assets/cards/hand/Sigismund Dijkstra.png",
+    image: "/assets/cards/board/Sigismund_Dijkstra.png",
+    handImage: "/assets/cards/hand/Sigismund_Dijkstra.png",
     onPlay: spyEffect
   },
   {
@@ -398,8 +398,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 5,
     allowedRows: ["RANGED"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Sile de Tansarville.png",
-    handImage: "/assets/cards/hand/Sile de Tansarville.png",
+    image: "/assets/cards/board/Sile_de_Tansarville.png",
+    handImage: "/assets/cards/hand/Sile_de_Tansarville.png",
   },
   {
     id: "thaler",
@@ -417,8 +417,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 6,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Trebuchet 1.png",
-    handImage: "/assets/cards/hand/Trebuchet 1.png",
+    image: "/assets/cards/board/Trebuchet_1.png",
+    handImage: "/assets/cards/hand/Trebuchet_1.png",
   },
   {
     id: "trebuchet_2",
@@ -426,8 +426,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 6,
     allowedRows: ["SIEGE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Trebuchet 2.png",
-    handImage: "/assets/cards/hand/Trebuchet 2.png",
+    image: "/assets/cards/board/Trebuchet_2.png",
+    handImage: "/assets/cards/hand/Trebuchet_2.png",
   },
   {
     id: "vernon_roche",
@@ -435,8 +435,8 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 10,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Vernon Roche.png",
-    handImage: "/assets/cards/hand/Vernon Roche.png",
+    image: "/assets/cards/board/Vernon_Roche.png",
+    handImage: "/assets/cards/hand/Vernon_Roche.png",
     isHero: true
   },
   {
@@ -454,7 +454,7 @@ export const northernRealmsCards: CardDefinition[] = [
     basePower: 2,
     allowedRows: ["MELEE"],
     faction: "NORTHERN_REALMS",
-    image: "/assets/cards/board/Yarpen Zigrin.png",
-    handImage: "/assets/cards/hand/Yarpen Zigrin.png",
+    image: "/assets/cards/board/Yarpen_Zigrin.png",
+    handImage: "/assets/cards/hand/Yarpen_Zigrin.png",
   },
 ];  
