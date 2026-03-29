@@ -1,15 +1,12 @@
 import { io, Socket } from "socket.io-client"
 
-const SOCKET_URL =
-  import.meta.env.VITE_SOCKET_URL ?? "http://localhost:4000"
-
-// Socket nie łączy się automatycznie - tylko gdy użytkownik dołączy do gry
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? "http://localhost:4000"
 let socketInstance: Socket | null = null
 
 export function getSocket(): Socket {
   if (!socketInstance) {
     socketInstance = io(SOCKET_URL, {
-      autoConnect: false, // Nie łącz się automatycznie
+      autoConnect: false, 
       transports: ["websocket", "polling"],
     })
   }
@@ -30,5 +27,4 @@ export function disconnectSocket() {
   }
 }
 
-// Dla kompatybilności wstecznej
 export const socket = getSocket()

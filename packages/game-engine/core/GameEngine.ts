@@ -522,6 +522,10 @@ export class GameEngine {
       this.createCardInstance("dun_banner_medic"), // Medic
       // Pozostałe karty (11 kart)
       this.createCardInstance("dethmold"),
+      this.createCardInstance("ballista_1"),
+      this.createCardInstance("ballista_1"),
+      this.createCardInstance("ballista_1"),
+      this.createCardInstance("ballista_1"),
       // this.createCardInstance("esterad_thyssen"),
       // this.createCardInstance("john_natalis"),
       // this.createCardInstance("keira_metz"),

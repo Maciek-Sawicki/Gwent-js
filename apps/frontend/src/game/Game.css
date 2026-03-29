@@ -1,5 +1,5 @@
 .game-screen {
-  width: min(1500px, 99vw);
+  width: 100vw;
   margin: 0 auto;
   padding: 20px 16px;
   display: grid;
@@ -10,15 +10,22 @@
 .game-main {
   min-width: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 16px;
 }
 
 .game-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   gap: 16px;
+  flex-direction: column;
+}
+
+.board-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .player-score {
@@ -60,6 +67,7 @@
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 .pass-button:hover {
@@ -83,7 +91,7 @@
   border-radius: 12px;
   padding: 16px;
   background: linear-gradient(135deg, rgba(30, 20, 15, 0.9) 0%, rgba(20, 12, 8, 0.9) 100%);
-  align-self: start;
+  /* align-self: start; */
   box-shadow: 
     inset 0 2px 8px rgba(0, 0, 0, 0.4),
     0 4px 16px rgba(0, 0, 0, 0.5);
@@ -170,11 +178,13 @@
   text-align: center;
 }
 
+.turn-indicator {
+  width: 100%;
+  display: block;
+}
+
 .turn-status {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
+  width: 100%;
 }
 
 .turn-indicator {
@@ -185,6 +195,8 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 100%;
 }
 
 .turn-indicator.your-turn {
@@ -218,6 +230,10 @@
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
+}
+
+.pass-button {
+  width: 100%;
 }
 
 .pass-button.disabled {
@@ -338,7 +354,8 @@
 }
 
 .board-section {
-  margin-bottom: 16px;
+  width: 1300px;
+  margin: 0 auto;
 }
 
 .opponent-label,

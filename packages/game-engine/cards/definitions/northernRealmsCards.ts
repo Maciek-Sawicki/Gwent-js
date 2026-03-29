@@ -5,8 +5,6 @@ import { medicEffect } from "../../effects/medic"
 import { moraleBoostEffect } from "../../effects/moraleBoost"
 import { spyEffect } from "../../effects/spy"
 
-// Add power badges to cards and fix Poor Fucking Infantry Tight Bond
-
 export const northernRealmsCards: CardDefinition[] = [
   {
     id: "ballista_1",

@@ -1,3 +1,4 @@
+import React from "react";
 import { useMemo, useState, useEffect } from 'react'
 import type { GameStateDto } from '@repo/shared'
 import type { BoardRows, RowId, CardData } from './types'
@@ -51,7 +52,7 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
       console.log('Current playerId:', playerId)
       console.log('Current player:', state.currentPlayer)
       console.log('Players:', state.players.map(p => ({ id: p.id, passed: p.passed })))
-      
+
       setGameState(state)
     })
 
@@ -134,28 +135,28 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
 
   function handleRowClick(row: RowId) {
     console.log('handleRowClick:', { row, selectedCard, isMyTurn, iPassed, myPlayer })
-    
+
     // Sprawdź wszystkie warunki przed wysłaniem komendy
     if (!selectedCard) {
       console.log('Cannot place card - no card selected')
       return
     }
-    
+
     if (!isMyTurn) {
       console.log('Cannot place card - not my turn')
       return
     }
-    
+
     if (iPassed) {
       console.log('Cannot place card - already passed')
       return
     }
-    
+
     if (!myPlayer || myPlayer.passed) {
       console.log('Cannot place card - player has passed')
       return
     }
-    
+
     // Sprawdź czy karta nadal jest w ręce
     const cardInHand = myPlayer.hand.find(c => c.id === selectedCard.id)
     if (!cardInHand) {
@@ -207,7 +208,7 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
   const isGameFinished = gameState?.status === "FINISHED"
 
   if (isGameFinished && myPlayer && opponentPlayer) {
-  const didIWin = winner?.id === myPlayer.id
+    const didIWin = winner?.id === myPlayer.id
 
     return (
       <div className="game-screen">
@@ -245,8 +246,8 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
           {isWaiting && (
             <div className="waiting-message" data-testid="waiting-message">
               <p className="waiting-text" data-testid="waiting-for-player-text">
-                {playersCount === 1 
-                  ? "Czekasz na drugiego gracza..." 
+                {playersCount === 1
+                  ? "Czekasz na drugiego gracza..."
                   : "Oczekiwanie na rozpoczęcie gry..."}
               </p>
               <div className="waiting-spinner"></div>
@@ -281,7 +282,7 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
               Wygrałeś: {myPlayer.roundsWon || 0} | Przeciwnik: {opponentPlayer?.roundsWon || 0}
             </div>
           </div>
-          
+
           <div className="turn-status" data-testid="turn-status">
             {isMyTurn && !iPassed ? (
               <div className="turn-indicator your-turn" data-testid="turn-your-turn">
@@ -313,25 +314,27 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
         </div>
 
         {/* Jedna plansza z dwoma połowami */}
-        <div className="board-section">
-          <div className="opponent-label">Przeciwnik {opponentPassed && '(Spasował)'}</div>
-          <Board
-            opponentRows={opponentRows}
-            playerRows={rows}
-            canPlaceCard={Boolean(selectedCard) && isMyTurn && !iPassed && !selectedCard?.isSpy}
-            selectedCardRows={selectedCard?.rows ?? []}
-            onRowClick={handleRowClick}
-            selectedCardIsSpy={selectedCard?.isSpy ?? false}
-          />
-          <div className="player-label">Ty {iPassed && '(Spasowałeś)'}</div>
-        </div>
+        <div className="board-wrapper">
+          <div className="board-section">
+            <div className="opponent-label">Przeciwnik {opponentPassed && '(Spasował)'}</div>
+            <Board
+              opponentRows={opponentRows}
+              playerRows={rows}
+              canPlaceCard={Boolean(selectedCard) && isMyTurn && !iPassed && !selectedCard?.isSpy}
+              selectedCardRows={selectedCard?.rows ?? []}
+              onRowClick={handleRowClick}
+              selectedCardIsSpy={selectedCard?.isSpy ?? false}
+            />
+            <div className="player-label">Ty {iPassed && '(Spasowałeś)'}</div>
+          </div>
 
-        <Hand
-          cards={hand}
-          selectedCardId={selectedCardId}
-          onSelectCard={handleSelectCard}
-          disabled={!isMyTurn || iPassed}
-        />
+          <Hand
+            cards={hand}
+            selectedCardId={selectedCardId}
+            onSelectCard={handleSelectCard}
+            disabled={!isMyTurn || iPassed}
+          />
+        </div>
 
       </div>
 
@@ -348,16 +351,16 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
 
             <p><strong>Moc:</strong> {selectedCard.power ?? 0}</p>
             <p><strong>Rzędy:</strong> {
-              selectedCard.rows.map(row => 
-                row === 'melee' ? 'WALKA WRĘCZ' : 
-                row === 'ranged' ? 'DALECKI ZASIĘG' : 
-                'OBLEŻENIE'
+              selectedCard.rows.map(row =>
+                row === 'melee' ? 'WALKA WRĘCZ' :
+                  row === 'ranged' ? 'DALECKI ZASIĘG' :
+                    'OBLEŻENIE'
               ).join(', ')
             }</p>
           </>
         ) : (
           <p className="preview-empty">
-            {isMyTurn && !iPassed 
+            {isMyTurn && !iPassed
               ? 'Kliknij kartę w ręce, następnie kliknij odpowiedni rząd na planszy.'
               : iPassed
                 ? 'Spasowałeś. Czekasz na przeciwnika.'

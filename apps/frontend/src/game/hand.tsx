@@ -1,3 +1,4 @@
+import React from "react";
 import type { CardData } from './types'
 import './Hand.css'
 
@@ -20,7 +21,7 @@ export function Hand({
       {cards.map((card) => (
         <div key={card.id} className="hand-card-wrapper">
           <img
-            src={card.handSrc || card.src} // Użyj handSrc jeśli dostępny, w przeciwnym razie src
+            src={card.handSrc || card.src} 
             alt={card.id}
             className={`hand-card ${selectedCardId === card.id ? 'is-selected' : ''} ${disabled ? 'disabled' : ''}`}
             onClick={() => !disabled && onSelectCard(card.id)}
