@@ -1,3 +1,4 @@
+import React from "react";
 import './Board.css'
 import type { BoardRows, RowId } from './types'
 import boardImg from '../assets/board/board.jpeg'

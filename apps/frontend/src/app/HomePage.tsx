@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react'
 import './HomePage.css'
 
@@ -10,7 +11,6 @@ export function HomePage({ onJoinGame }: HomePageProps) {
   const [error, setError] = useState<string | null>(null)
 
   function generateGameCode(): string {
-    // Generuj losowy 6-cyfrowy kod
     return Math.floor(100000 + Math.random() * 900000).toString()
   }
 

@@ -1,6 +1,6 @@
 .board {
   position: relative;
-  width: min(1265px, 98vw);
+  width: 1300px;
   margin: 0px auto 6px;
   aspect-ratio: 16 / 9;
   background-size: cover;

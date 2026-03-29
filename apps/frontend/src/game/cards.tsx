@@ -12,6 +12,6 @@ export const INITIAL_HAND: CardData[] = [
   { id: 'c12', src: c12, rows: ['melee'], power: 3 },
   { id: 'c13', src: c13, rows: ['melee'], power: 3 },
   { id: 'c14', src: c14, rows: ['melee'], power: 3 },
-  { id: 'c21', src: c21, rows: ['melee', 'ranged'], power: 3 }, // Przykład karty z dwoma rzędami
+  { id: 'c21', src: c21, rows: ['melee', 'ranged'], power: 3 }, 
   { id: 'c22', src: c22, rows: ['ranged'], power: 2 },
 ]
