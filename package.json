@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "test:socket": "playwright test -c playwright.socket.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
