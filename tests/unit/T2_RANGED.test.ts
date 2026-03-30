@@ -21,8 +21,8 @@ describe("Play ranged cards", () => {
     };
     const engine = new GameEngine(initialState);
 
-    const p1_cards = ["dethmold", "dethmold", "crinfrid_reavers_dragon_hunter_1"];
-    const p2_cards = ["dethmold", "dethmold", "crinfrid_reavers_dragon_hunter_1"];
+    const p1_cards = ["dethmold", "dethmold", "crinfrid_reavers_dragon_hunter_1", "dethmold"];
+    const p2_cards = ["dethmold", "dethmold", "crinfrid_reavers_dragon_hunter_1", "dethmold"];
 
     p1_cards.forEach(id => engine.getState().players.p1.hand.push(engine.createCardInstance(id)));
     p2_cards.forEach(id => engine.getState().players.p2.hand.push(engine.createCardInstance(id)));
@@ -34,6 +34,7 @@ describe("Play ranged cards", () => {
     engine.dispatch({ type: "PLAY_CARD", playerId: "p1", cardId: engine.getState().players.p1.hand[0].id, row: "RANGED" });
     engine.dispatch({ type: "PLAY_CARD", playerId: "p2", cardId: engine.getState().players.p2.hand[0].id, row: "RANGED" });
 
+    console.log("P1 board:", engine.getState().players.p1.board);
     const rangedCardsP1 = engine.getState().players.p1.board.RANGED;
     const rangedCardsP2 = engine.getState().players.p2.board.RANGED;
   

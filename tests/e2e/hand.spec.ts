@@ -105,10 +105,11 @@ test.describe('GWINT E2E', () => {
 
   test('11. Można spasować (symulacja)', async ({ browser }) => {
     const { p1 } = await startGame(browser);
-    const passBtn = p1.getByRole('button', { name: /pasuj/i });
-    await passBtn.click();
-
+    const passBtn = p1.getByTestId('pass-button');
+    await expect(p1.getByText(/twoja tura/i)).toBeVisible();
     await expect(passBtn).toBeVisible();
+
+    await passBtn.click();
   });
 
   test('12. Po spasowaniu nie można grać kart (symulacja)', async ({ browser }) => {

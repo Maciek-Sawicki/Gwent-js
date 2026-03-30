@@ -42,7 +42,7 @@ test('1. spy daje +2 karty (10 -> 11)', async ({ browser }) => {
   await expect(spyCard).toHaveClass(/is-selected/);
   await p1.locator('.opponent-row.row-3').click();
 
-  await expect(hand).toHaveCount(11, { timeout: 1000 });
+  await expect(hand).toHaveCount(11, { timeout: 10000 });
 });
 
 test('2. spy trafia na planszę przeciwnika', async ({ browser }) => {

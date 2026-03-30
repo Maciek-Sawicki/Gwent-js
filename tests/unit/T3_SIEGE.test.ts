@@ -3,11 +3,16 @@ import { GameEngine } from "../../packages/game-engine/core/GameEngine";
 import { GameState } from "../../packages/game-engine/core/GameState";
 import { CardRegistrySetup } from "../../packages/game-engine/cards/CardRegistrySetup";
 
+beforeAll(() => {
+  CardRegistrySetup();
+});
+
+
 
 describe("Play siege cards", () => {
   it("should correctly play cards to SIEGE row", () => {
     
-    CardRegistrySetup();
+    // CardRegistrySetup();
 
     const initialState: GameState = {
       round: 1,
@@ -20,8 +25,8 @@ describe("Play siege cards", () => {
     };
     const engine = new GameEngine(initialState);
 
-    const p1_cards = ["siege_tower_1", "siege_tower_2"];
-    const p2_cards = ["siege_tower_1", "siege_tower_2"];
+    const p1_cards = ["siege_tower_1", "siege_tower_2", "siege_tower_1"];
+    const p2_cards = ["siege_tower_1", "siege_tower_2", "siege_tower_1"];
 
     p1_cards.forEach(id => engine.getState().players.p1.hand.push(engine.createCardInstance(id)));
     p2_cards.forEach(id => engine.getState().players.p2.hand.push(engine.createCardInstance(id)));

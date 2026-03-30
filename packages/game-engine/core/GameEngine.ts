@@ -7,15 +7,12 @@ import { CardInstance } from "./CardInstance"
 import { PlayerState } from "./PlayerState"
 import { Modifier } from "../scoring/Modifier"
 import { ScoringService } from "../scoring/ScoringService"
-import { northernRealmsCards } from "../cards/definitions/northernRealmsCards"
+import { DeckFactory, DeckMode } from "./DeckFactory";
 import { spyEffect } from "../effects/spy"
-
-const isSpyTestMode = process.env.TEST_SPY_MODE === 'true';
 
 export class GameEngine {
   private state: GameState
   private eventQueue = new EventQueue()
-  
 
   constructor(initialState: GameState) {
     this.state = initialState
@@ -25,28 +22,12 @@ export class GameEngine {
     return this.state
   }
 
-  // Ważny bug do naprawy
-
-  // > play 0 RANGED
-  // Playing Balista -> RANGED
-  // Server error: Error: Card cannot be played on this row
-  // > play 0 SIEGE
-  // Playing Balista -> SIEGE
-  // Server error: Error: Card not in hand
-
-  // jeżeli wibierzemy rząd, na którym karta nie może być zagrana, to karta znika z ręki i nie trafia na planszę.
-  // Dzieje się tak dlatego, że najpierw usuwamy kartę z ręki, a dopiero potem sprawdzamy, czy można ją zagrać na dany rząd.
-  // Jeśli nie można, to rzucamy wyjątek, ale karta już została usunięta z ręki i nie wraca na nią.
-  // Giga ważne do naprawy, bo inaczej gra jest niegrywalna
-
-
   dispatch(command: GameCommand): void {
     if (this.state.status === "FINISHED") {
       console.log("[ENGINE] Command ignored. Game is already finished.");
       return;
     }
 
-    // Sprawdź czy gracz nie spasował przed wykonaniem komendy
     const player = this.state.players[command.playerId];
     if (player && player.passed && command.type === "PLAY_CARD") {
       console.log(`[ENGINE] Command ignored. Player ${command.playerId} has already passed.`);
@@ -79,7 +60,6 @@ export class GameEngine {
 
     const player = this.state.players[playerId];
 
-    // Sprawdź czy gracz nie spasował
     if (player.passed) {
       throw new Error("You have already passed");
     }
@@ -94,7 +74,7 @@ export class GameEngine {
       throw new Error("Card cannot be played on this row");
     }
 
-    // Sprawdź czy to karta Spy - jeśli tak, połóż na planszę przeciwnika
+    // Check if the card is a Spy card by comparing its onPlay effect to the spyEffect function
     const isSpy = definition.onPlay === spyEffect;
     const targetPlayerId = isSpy ? this.getOpponentId(playerId) : playerId;
     const targetPlayer = this.state.players[targetPlayerId];
@@ -103,7 +83,7 @@ export class GameEngine {
     targetPlayer.board[row].push(card);
     player.hand.splice(index, 1);
 
-    // Przelicz efekty dla planszy na którą karta została położona
+    // Recalculate effects for the row where the card was played (important for Spy cards that affect opponent's row)
     this.recalculateRowEffects(targetPlayerId, row);
 
     this.eventQueue.push({
@@ -113,7 +93,7 @@ export class GameEngine {
       row
     });
 
-    // Jeśli graczowi skończyły się karty w ręce, automatycznie spasuje
+    // If the player has no cards left after playing, automatically pass their turn
     if (player.hand.length === 0) {
       console.log(`[AUTO PASS] Player ${playerId} has no cards left, auto-passing`);
       player.passed = true;
@@ -144,14 +124,14 @@ export class GameEngine {
     const playerIds = Object.keys(this.state.players);
     let currentIndex = playerIds.indexOf(this.state.currentPlayer);
 
-    // Sprawdź czy aktualny gracz nie ma kart - jeśli nie ma, automatycznie spasuj
+    // Check if current player has no cards left and auto-pass if necessary
     const currentPlayer = this.state.players[this.state.currentPlayer];
     if (currentPlayer && !currentPlayer.passed && currentPlayer.hand.length === 0) {
       console.log(`[AUTO PASS] Player ${this.state.currentPlayer} has no cards left, auto-passing`);
       currentPlayer.passed = true;
     }
 
-    // Sprawdź czy wszyscy gracze spasowali
+    // Check if all players have passed after potential auto-pass
     const allPassed = playerIds.every(id => this.state.players[id].passed);
     if (allPassed) {
       console.log("[TURN] All players passed, ending round...");
@@ -164,18 +144,17 @@ export class GameEngine {
       const nextPlayerId = playerIds[nextIndex];
       const nextPlayer = this.state.players[nextPlayerId];
 
-      // Sprawdź czy następny gracz nie ma kart - jeśli nie ma, automatycznie spasuj
+      // Check if the next player has no cards left and auto-pass if necessary
       if (!nextPlayer.passed && nextPlayer.hand.length === 0) {
         console.log(`[AUTO PASS] Player ${nextPlayerId} has no cards left, auto-passing`);
         nextPlayer.passed = true;
-        // Sprawdź ponownie czy wszyscy spasowali
+        // Check again if all players have passed
         const allPassedNow = playerIds.every(id => this.state.players[id].passed);
         if (allPassedNow) {
           console.log("[TURN] All players passed, ending round...");
           this.checkRoundEnd();
           return;
         }
-        // Kontynuuj szukanie następnego aktywnego gracza
         continue;
       }
 
@@ -199,12 +178,12 @@ export class GameEngine {
     }
   }
 
-  private switchTurn() {
-    const ids = Object.keys(this.state.players)
-    const currentIndex = ids.indexOf(this.state.currentPlayer)
-    const nextIndex = (currentIndex + 1) % ids.length
-    this.state.currentPlayer = ids[nextIndex]
-  }
+  // private switchTurn() {
+  //   const ids = Object.keys(this.state.players)
+  //   const currentIndex = ids.indexOf(this.state.currentPlayer)
+  //   const nextIndex = (currentIndex + 1) % ids.length
+  //   this.state.currentPlayer = ids[nextIndex]
+  // }
 
   private processEvents() {
     this.eventQueue.process(event => {
@@ -254,7 +233,7 @@ export class GameEngine {
       definitionId,
       row: undefined,
       modifiers: [],
-      bondGroup: def.bondGroup // <-- dodajemy bondGroup do instancji
+      bondGroup: def.bondGroup
     };
   }
 
@@ -428,230 +407,15 @@ export class GameEngine {
 
   startGame() {
     for (const player of Object.values(this.state.players)) {
-      this.shuffleDeck(player.id)
-      this.drawCards(player.id, 10)
+      if (player.hand.length === 0) {
+        this.shuffleDeck(player.id)
+        this.drawCards(player.id, 10)
+      }
     }
   }
 
   createDeck(definitionIds: string[]): CardInstance[] {
     return definitionIds.map(id => this.createCardInstance(id))
-  }
-
-  createNorthernRealmsDeck(): CardInstance[] {
-    // Wyklucz leaderów z talii (są oddzielnie)
-    const nonLeaderCards = northernRealmsCards.filter(card => !card.isLeader);
-
-    // Utwórz pulę 40 kart (możemy mieć duplikaty jeśli potrzeba)
-    // Jeśli mamy mniej niż 40 kart, powtarzamy karty
-    const deck: CardInstance[] = [];
-    while (deck.length < 40) {
-      for (const card of nonLeaderCards) {
-        if (deck.length >= 40) break;
-        deck.push(this.createCardInstance(card.id));
-      }
-    }
-
-    return deck;
-  }
-
-  /**
-   * Tworzy stałe talie z kartami pokazującymi wszystkie efekty
-   * Każdy gracz dostaje karty które demonstrują:
-   * - Tight Bond (Ballista, Catapult, Blue Stripes Commando, etc.)
-   * - Morale Boost (Keadweni Siege Expert)
-   * - Spy (Prince Stennis, Sigismund Dijkstra, Thaler)
-   * - Medic (Dun Banner Medic)
-   */
-  createDemonstrationDecks(): { player1: CardInstance[], player2: CardInstance[] } {
-    // Karty pokazujące efekty:
-    const tightBondCards = [
-      "ballista_1", "ballista_2", // Tight Bond - 2 karty (SIEGE)
-      "catapult_1", "catapult_2", // Tight Bond - 2 karty (SIEGE)
-      "blue_stripes_commando_1", "blue_stripes_commando_2", "blue_stripes_commando_3", // Tight Bond - 3 karty (MELEE)
-      "trebuchet_1", "trebuchet_2", // Tight Bond - 2 karty (SIEGE)
-      "poor_fucking_infantry_1", "poor_fucking_infantry_2", "poor_fucking_infantry_3", // Tight Bond - 3 karty (MELEE)
-      "crinfrid_reavers_dragon_hunter_1", "crinfrid_reavers_dragon_hunter_2", "crinfrid_reavers_dragon_hunter_3", // Tight Bond - 3 karty (RANGED)
-    ];
-
-    const moraleBoostCards = [
-      "kaedweni_siege_expert_1", "kaedweni_siege_expert_2", "kaedweni_siege_expert_3", // Morale Boost - 3 karty (SIEGE)
-    ];
-
-    const spyCards = [
-      "prince_stennis", // Spy (MELEE)
-      "sigismund_dijkstra", // Spy (MELEE)
-      "thaler", // Spy (SIEGE)
-    ];
-
-    const medicCards = [
-      "dun_banner_medic", // Medic (SIEGE)
-    ];
-
-    // Pozostałe karty do wypełnienia talii
-    const otherCards = [
-      "dethmold",
-      "esterad_thyssen",
-      "john_natalis",
-      "keira_metz",
-      "philippa_eilhart",
-      "redanian_foot_soldier_1", "redanian_foot_soldier_2",
-      "sabrina_glevissig",
-      "shelden_skaggs",
-      "siege_tower_1", "siege_tower_2",
-      "siegfried_of_denesle",
-      "sile_de_bruyne",
-      "vernon_roche",
-      "ves",
-      "yarpen_zigrin",
-    ];
-
-    // Talia gracza 1 (20 kart) - zawiera wszystkie efekty
-    const player1Deck: CardInstance[] = [
-      // Tight Bond przykłady (można pokazać efekt z 2 kartami)
-      this.createCardInstance("ballista_1"),
-      this.createCardInstance("ballista_2"), // Tight Bond - razem = 12+12=24
-      this.createCardInstance("blue_stripes_commando_1"),
-      this.createCardInstance("blue_stripes_commando_2"), // Tight Bond - razem = 8+8=16
-      // Morale Boost
-      this.createCardInstance("kaedweni_siege_expert_1"),
-      this.createCardInstance("kaedweni_siege_expert_2"), // Morale Boost - każda daje +1 innym
-      // Spy
-      this.createCardInstance("prince_stennis"), // Spy
-      this.createCardInstance("sigismund_dijkstra"), // Spy
-      // Medic
-      this.createCardInstance("dun_banner_medic"), // Medic
-      // Pozostałe karty (11 kart)
-      this.createCardInstance("dethmold"),
-      this.createCardInstance("ballista_1"),
-      this.createCardInstance("ballista_1"),
-      this.createCardInstance("ballista_1"),
-      this.createCardInstance("ballista_1"),
-      // this.createCardInstance("esterad_thyssen"),
-      // this.createCardInstance("john_natalis"),
-      // this.createCardInstance("keira_metz"),
-      // this.createCardInstance("philippa_eilhart"),
-      // this.createCardInstance("redanian_foot_soldier_1"),
-      // this.createCardInstance("sabrina_glevissig"),
-      // this.createCardInstance("siege_tower_1"),
-      // this.createCardInstance("siegfried_of_denesle"),
-      // this.createCardInstance("vernon_roche"),
-      // this.createCardInstance("ves"),
-    ];
-
-    // Talia gracza 2 (20 kart) - zawiera wszystkie efekty
-    const player2Deck: CardInstance[] = [
-      // Tight Bond przykłady
-      this.createCardInstance("catapult_1"),
-      this.createCardInstance("catapult_2"), // Tight Bond - razem = 16+16=32
-      this.createCardInstance("trebuchet_1"),
-      this.createCardInstance("trebuchet_2"), // Tight Bond - razem = 12+12=24
-      this.createCardInstance("poor_fucking_infantry_1"),
-      this.createCardInstance("poor_fucking_infantry_2"), // Tight Bond - razem = 2+2=4
-      // Morale Boost
-      this.createCardInstance("kaedweni_siege_expert_3"), // Morale Boost
-      // Spy
-      this.createCardInstance("thaler"), // Spy
-      // Pozostałe karty (12 kart)
-      this.createCardInstance("redanian_foot_soldier_2"),
-      this.createCardInstance("shelden_skaggs"),
-      this.createCardInstance("siege_tower_2"),
-      this.createCardInstance("sile_de_bruyne"),
-      this.createCardInstance("yarpen_zigrin"),
-      this.createCardInstance("crinfrid_reavers_dragon_hunter_1"),
-      this.createCardInstance("crinfrid_reavers_dragon_hunter_2"),
-      this.createCardInstance("crinfrid_reavers_dragon_hunter_3"), // Tight Bond - razem = 15+15+15=45
-      this.createCardInstance("blue_stripes_commando_3"), // Dodatkowa dla Tight Bond
-      this.createCardInstance("poor_fucking_infantry_3"), // Dodatkowa dla Tight Bond
-      this.createCardInstance("dethmold"), // Duplikat dla wypełnienia
-      this.createCardInstance("keira_metz"), // Duplikat dla wypełnienia
-    ];
-
-    return {
-      player1: player1Deck,
-      player2: player2Deck
-    };
-  }
-
-  createSpyTestDeck(): { player1: CardInstance[], player2: CardInstance[] } {
-    const spyCards = [
-      "prince_stennis", // Spy (MELEE)
-      "sigismund_dijkstra", // Spy (MELEE)
-      "thaler", // Spy (SIEGE)
-    ];
-
-    const player1Deck: CardInstance[] = [
-      this.createCardInstance("sigismund_dijkstra"),
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"),
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-    ]
-
-    const player2Deck: CardInstance[] = [
-      this.createCardInstance("sigismund_dijkstra"),
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"),
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-      this.createCardInstance("sigismund_dijkstra"), 
-    ]
-
-    return {
-      player1: player1Deck,
-      player2: player2Deck
-    };
-  }
-
-  initializeDecks() {
-    const playerIds = Object.keys(this.state.players);
-
-    if (isSpyTestMode){
-      const decks = this.createSpyTestDeck();
-      this.state.players[playerIds[0]].deck = decks.player1;
-      this.state.players[playerIds[1]].deck = decks.player2;
-
-      console.log("Tryb szpiega")
-    }
-
-    else if (playerIds.length >= 2) {
-      // Użyj stałych talii z kartami pokazującymi wszystkie efekty
-      const decks = this.createDemonstrationDecks();
-      this.state.players[playerIds[0]].deck = decks.player1;
-      this.state.players[playerIds[1]].deck = decks.player2;
-    } else {
-      // Fallback: jeśli tylko jeden gracz, użyj losowej talii
-      const allCards = this.createNorthernRealmsDeck();
-      for (let i = allCards.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
-      }
-      for (const player of Object.values(this.state.players)) {
-        if (player.faction === "NORTHERN_REALMS") {
-          player.deck = allCards.slice(0, 20);
-        }
-      }
-    }
   }
 
   mulliganCard(playerId: string, cardId: string) {
@@ -668,5 +432,20 @@ export class GameEngine {
     this.shuffleDeck(playerId)
     this.drawCards(playerId, 1)
     player.mulligansUsed++
+  }
+
+  initializeDecks() {
+    const factory = new DeckFactory(this);
+
+    let mode = DeckMode.NORMAL;
+
+    if (process.env.DEMO === "true") {
+      mode = DeckMode.DEMO;
+    } else if (process.env.SPY_TEST === "true") {
+      mode = DeckMode.SPY_TEST;
+    } else if (process.env.DEMO_FIXED_HAND === "true") {
+      mode = DeckMode.DEMO_FIXED_HAND;
+    }
+    factory.initializeDecks(this.state.players, mode);
   }
 }
