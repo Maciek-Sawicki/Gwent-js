@@ -20,11 +20,13 @@ test('po dołączeniu obu graczy aktywny gracz może wybrać kartę i położyć
 
     await expect(active.getByTestId('turn-your-turn')).toBeVisible({ timeout: 10_000 })
 
-    await active.getByTestId('player-hand').locator('.hand-card').first().click()
+    await active.getByTestId('player-hand').locator('.hand-card').nth(1).click();
 
-    const placeableRow = active.locator('.player-half .row-zone.is-placeable').first()
-    await expect(placeableRow).toBeVisible({ timeout: 10_000 })
-    await placeableRow.click()
+    const placeableRows = active.locator('.row-zone.is-placeable');
+
+    await expect(placeableRows.first()).toBeVisible({ timeout: 10000 });
+
+    await placeableRows.first().click();
   } finally {
     await session.close()
   }

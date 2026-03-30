@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test'
 const serverDir = path.resolve(__dirname, 'apps/server')
 
 export default defineConfig({
-  testDir: './tests/socket-tests',
+  testDir: './tests/socket',
 
   // Socket testy mogą startować równolegle, ale żeby uniknąć
   // flaków i problemów z zasobami, ustawiamy sekwencyjnie.

@@ -72,12 +72,14 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
   // Mapowanie danych z backendu
   const myPlayer = useMemo(() => {
     if (!gameState || !playerId) return null
-    return gameState.players.find(p => p.id === playerId) || gameState.players[0]
+    // return gameState.players.find(p => p.id === playerId) || gameState.players[0]
+    return gameState.players.find(p => p.id === playerId) || null
   }, [gameState, playerId])
 
   const opponentPlayer = useMemo(() => {
     if (!gameState || !playerId) return null
-    return gameState.players.find(p => p.id !== playerId) || gameState.players[1]
+    // return gameState.players.find(p => p.id !== playerId) || gameState.players[1]
+    return gameState.players.find(p => p.id !== playerId) || null
   }, [gameState, playerId])
 
   const hand: CardData[] = useMemo(() => {
@@ -228,7 +230,7 @@ export function GameScreen({ gameId, onLeaveGame }: GameScreenProps) {
     )
   }
 
-  if (!gameState || !myPlayer || isWaiting) {
+  if (!gameState || !myPlayer || !opponentPlayer || isWaiting) {
     return (
       <div className="game-screen">
         <div className="loading-screen" data-testid="game-loading-screen">
