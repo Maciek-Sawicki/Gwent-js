@@ -3,7 +3,7 @@
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test:socket": "playwright test --config=socket.playwright.config.ts"
+    "test:socket": "playwright test --config=playwright.socket.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

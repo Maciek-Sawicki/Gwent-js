@@ -122,3 +122,57 @@ export async function setupTwoPlayerGame(
   }
 }
 
+/** Następny pojedynczy `state_update` (zarejestruj przed `emit`, żeby nie przegapić). */
+export function nextStateUpdate(socket: Socket, timeoutMs = 15000): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const t = setTimeout(
+      () => reject(new Error('timeout waiting for next state_update')),
+      timeoutMs,
+    )
+
+    const handler = (state: any) => {
+      clearTimeout(t)
+      socket.off('state_update', handler)
+      resolve(state)
+    }
+
+    socket.on('state_update', handler)
+  })
+}
+
+/** Widok gry bez rąk / socketId — do porównania synchronizacji planszy między klientami. */
+export function publicBoardSnapshot(state: any) {
+  const players = [...(state.players ?? [])].sort((a: any, b: any) =>
+    String(a.id).localeCompare(String(b.id)),
+  )
+  return {
+    round: state.round,
+    status: state.status,
+    currentPlayer: state.currentPlayer,
+    players: players.map((p: any) => ({
+      id: p.id,
+      passed: p.passed,
+      score: p.score,
+      roundsWon: p.roundsWon,
+      board: p.board,
+    })),
+  }
+}
+
+export function playerScoresTuple(state: any): number[] {
+  return [...(state.players ?? [])]
+    .sort((a: any, b: any) => String(a.id).localeCompare(String(b.id)))
+    .map((p: any) => p.score as number)
+}
+
+export function totalBoardCardCount(state: any): number {
+  const rows = ['MELEE', 'RANGED', 'SIEGE'] as const
+  let n = 0
+  for (const p of state.players ?? []) {
+    for (const row of rows) {
+      n += (p.board?.[row] ?? []).length
+    }
+  }
+  return n
+}
+
