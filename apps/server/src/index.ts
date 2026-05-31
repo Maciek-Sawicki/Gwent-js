@@ -152,16 +152,10 @@ io.on("connection", (socket) => {
       state.status = "IN_PROGRESS";
     }
 
-    broadcastState(gameId);
-
-    const currentState = engine.getState();
-    let dto = mapToDto(currentState);
-    if (!Array.isArray(dto.players)) dto.players = Object.values(dto.players);
-
     // Wyślij informację do gracza który właśnie dołączył, który gracz to "on"
     socket.emit("you_are_player", { playerId });
-    
-    io.to(gameId).emit("state_update", dto);
+
+    broadcastState(gameId);
   });
 
   socket.on("play_card", ({ cardId, row }) => {

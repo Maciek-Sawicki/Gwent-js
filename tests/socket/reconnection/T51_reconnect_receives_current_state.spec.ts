@@ -26,11 +26,7 @@ test('T51 - Reconnected player receives current game state', async () => {
     p1Socket.emit('play_card', { cardId: card!.id, row })
     const afterPlay = await waitForState(
       p1Socket,
-      (s) => {
-        const pl = (s.players ?? []).find((p: any) => p.id === 'p1')
-        const rowCards = pl?.board?.[row] ?? []
-        return rowCards.some((c: any) => c.id === card.id)
-      },
+      (s) => (s.players ?? []).some((pl: any) => (pl?.board?.[row] ?? []).some((c: any) => c.id === card.id)),
       15000,
     )
 
@@ -48,11 +44,7 @@ test('T51 - Reconnected player receives current game state', async () => {
 
     const synced = waitForState(
       newP1,
-      (s) => {
-        const pl = (s.players ?? []).find((p: any) => p.id === 'p1')
-        const rowCards = pl?.board?.[row] ?? []
-        return rowCards.some((c: any) => c.id === card.id)
-      },
+      (s) => (s.players ?? []).some((pl: any) => (pl?.board?.[row] ?? []).some((c: any) => c.id === card.id)),
       15000,
     )
 

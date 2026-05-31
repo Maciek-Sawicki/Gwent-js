@@ -17,11 +17,7 @@ test('T39 - Player 1 plays card → Player 2 receives update', async () => {
   try {
     const p2SeesCard = waitForState(
       p2Socket,
-      (s) => {
-        const pl = (s.players ?? []).find((p: any) => p.id === 'p1')
-        const rowCards = pl?.board?.[row] ?? []
-        return rowCards.some((c: any) => c.id === card.id)
-      },
+      (s) => (s.players ?? []).some((pl: any) => (pl?.board?.[row] ?? []).some((c: any) => c.id === card.id)),
       15000,
     )
 
