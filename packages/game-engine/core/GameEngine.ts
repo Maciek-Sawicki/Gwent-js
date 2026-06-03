@@ -5,6 +5,7 @@ import { CardRegistry } from "../cards/CardRegistry"
 import { Row } from "../../shared/types/Row"
 import { CardInstance } from "./CardInstance"
 import { PlayerState } from "./PlayerState"
+import { PlayerEntity } from "./PlayerEntity"
 import { Modifier } from "../scoring/Modifier"
 import { ScoringService } from "../scoring/ScoringService"
 import { DeckFactory, DeckMode } from "./DeckFactory";
@@ -20,6 +21,13 @@ export class GameEngine {
 
   getState(): GameState {
     return this.state
+  }
+
+  private player(playerId: string): PlayerEntity {
+    const state = this.state.players[playerId]
+    if (!state) throw new Error("Player not found")
+
+    return new PlayerEntity(state)
   }
 
   dispatch(command: GameCommand): void {
@@ -58,30 +66,27 @@ export class GameEngine {
   private handlePlayCard(playerId: string, cardId: string, row: Row) {
     this.ensureTurn(playerId);
 
-    const player = this.state.players[playerId];
+    const player = this.player(playerId);
 
     if (player.passed) {
       throw new Error("You have already passed");
     }
 
-    const index = player.hand.findIndex(c => c.id === cardId);
-    if (index === -1) throw new Error("Card not in hand");
-
-    const card = player.hand[index];
-    const definition = CardRegistry.get(card.definitionId);
+    const cardInHand = player.getCardFromHand(cardId);
+    const definition = CardRegistry.get(cardInHand.definitionId);
 
     if (!definition.allowedRows.includes(row)) {
       throw new Error("Card cannot be played on this row");
     }
 
+    const card = player.takeCardFromHand(cardId);
+
     // Check if the card is a Spy card by comparing its onPlay effect to the spyEffect function
     const isSpy = definition.onPlay === spyEffect;
     const targetPlayerId = isSpy ? this.getOpponentId(playerId) : playerId;
-    const targetPlayer = this.state.players[targetPlayerId];
+    const targetPlayer = this.player(targetPlayerId);
 
-    card.row = row;
-    targetPlayer.board[row].push(card);
-    player.hand.splice(index, 1);
+    targetPlayer.placeCardOnBoard(card, row);
 
     // Recalculate effects for the row where the card was played (important for Spy cards that affect opponent's row)
     this.recalculateRowEffects(targetPlayerId, row);
@@ -94,9 +99,9 @@ export class GameEngine {
     });
 
     // If the player has no cards left after playing, automatically pass their turn
-    if (player.hand.length === 0) {
+    if (player.handSize === 0) {
       console.log(`[AUTO PASS] Player ${playerId} has no cards left, auto-passing`);
-      player.passed = true;
+      player.pass();
       this.checkRoundEnd();
     }
 
@@ -109,12 +114,12 @@ export class GameEngine {
   }
 
   private handlePass(playerId: string) {
-    const player = this.state.players[playerId];
+    const player = this.player(playerId);
     if (player.passed) {
       console.log(`[PASS IGNORED] Player ${playerId} already passed.`);
       return;
     }
-    player.passed = true;
+    player.pass();
     console.log(`[PASS] Player ${playerId} has passed.`)
     this.switchTurnToNextActivePlayer();
     this.checkRoundEnd()
@@ -125,10 +130,10 @@ export class GameEngine {
     let currentIndex = playerIds.indexOf(this.state.currentPlayer);
 
     // Check if current player has no cards left and auto-pass if necessary
-    const currentPlayer = this.state.players[this.state.currentPlayer];
-    if (currentPlayer && !currentPlayer.passed && currentPlayer.hand.length === 0) {
+    const currentPlayer = this.player(this.state.currentPlayer);
+    if (!currentPlayer.passed && currentPlayer.handSize === 0) {
       console.log(`[AUTO PASS] Player ${this.state.currentPlayer} has no cards left, auto-passing`);
-      currentPlayer.passed = true;
+      currentPlayer.pass();
     }
 
     // Check if all players have passed after potential auto-pass
@@ -142,12 +147,12 @@ export class GameEngine {
     for (let i = 1; i <= playerIds.length; i++) {
       const nextIndex = (currentIndex + i) % playerIds.length;
       const nextPlayerId = playerIds[nextIndex];
-      const nextPlayer = this.state.players[nextPlayerId];
+      const nextPlayer = this.player(nextPlayerId);
 
       // Check if the next player has no cards left and auto-pass if necessary
-      if (!nextPlayer.passed && nextPlayer.hand.length === 0) {
+      if (!nextPlayer.passed && nextPlayer.handSize === 0) {
         console.log(`[AUTO PASS] Player ${nextPlayerId} has no cards left, auto-passing`);
-        nextPlayer.passed = true;
+        nextPlayer.pass();
         // Check again if all players have passed
         const allPassedNow = playerIds.every(id => this.state.players[id].passed);
         if (allPassedNow) {
@@ -343,9 +348,9 @@ export class GameEngine {
     const winners = this.resolveRoundWinner();
 
     for (const winnerId of winners) {
-      const player = this.state.players[winnerId];
-      player.roundsWon++;
-      console.log(`[ROUND RESULT] ${winnerId} wins the round (total wins: ${player.roundsWon})`);
+      const player = this.player(winnerId);
+      player.winRound();
+      console.log(`[ROUND RESULT] ${winnerId} wins the round (total wins: ${player.snapshot.roundsWon})`);
     }
 
     const players = Object.values(this.state.players);
@@ -370,12 +375,7 @@ export class GameEngine {
 
   private prepareNextRound() {
     for (const player of Object.values(this.state.players)) {
-      player.board = {
-        MELEE: [],
-        RANGED: [],
-        SIEGE: []
-      }
-      player.passed = false
+      new PlayerEntity(player).prepareNextRound()
     }
     this.state.round++
 
@@ -386,14 +386,7 @@ export class GameEngine {
   }
 
   drawCards(playerId: string, count: number) {
-    const player = this.state.players[playerId]
-
-    for (let i = 0; i < count; i++) {
-      const card = player.deck.pop()
-      if (!card) break
-
-      player.hand.push(card)
-    }
+    this.player(playerId).drawCards(count)
   }
 
   shuffleDeck(playerId: string) {
@@ -412,6 +405,7 @@ export class GameEngine {
         this.drawCards(player.id, 10)
       }
     }
+    this.state.status = "IN_PROGRESS"
   }
 
   createDeck(definitionIds: string[]): CardInstance[] {
@@ -419,33 +413,16 @@ export class GameEngine {
   }
 
   mulliganCard(playerId: string, cardId: string) {
-    const player = this.state.players[playerId]
-    if (player.mulligansUsed >= 2) {
-      throw new Error("No mulligans left")
-    }
-    const index = player.hand.findIndex(c => c.id === cardId)
-    if (index === -1) {
-      throw new Error("Card not in hand")
-    }
-    const [card] = player.hand.splice(index, 1)
-    player.deck.push(card)
+    const player = this.player(playerId)
+    player.ensureCanMulligan()
+    player.returnCardToDeck(cardId)
     this.shuffleDeck(playerId)
     this.drawCards(playerId, 1)
-    player.mulligansUsed++
+    player.useMulligan()
   }
 
-  initializeDecks() {
+  initializeDecks(mode: DeckMode = DeckMode.NORMAL) {
     const factory = new DeckFactory(this);
-
-    let mode = DeckMode.NORMAL;
-
-    if (process.env.DEMO === "true") {
-      mode = DeckMode.DEMO;
-    } else if (process.env.SPY_TEST === "true") {
-      mode = DeckMode.SPY_TEST;
-    } else if (process.env.DEMO_FIXED_HAND === "true") {
-      mode = DeckMode.DEMO_FIXED_HAND;
-    }
     factory.initializeDecks(this.state.players, mode);
   }
 }

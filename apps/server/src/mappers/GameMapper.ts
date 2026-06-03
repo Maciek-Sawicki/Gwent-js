@@ -5,8 +5,12 @@ import {
   CardInstance,
 } from "@repo/game-engine";
 import { GameStateDto } from "@repo/shared";
+import type { PlayerConnection } from "../application/ports/GameRepository";
 
-export function mapToDto(state: GameState): GameStateDto {
+export function mapToDto(
+  state: GameState,
+  connections: Record<string, PlayerConnection> = {},
+): GameStateDto {
   function mapCard(c: CardInstance) {
     const def = CardRegistry.get(c.definitionId);
     return {
@@ -27,7 +31,7 @@ return {
   status: state.status,
   players: Object.values(state.players).map(player => ({
     id: player.id,
-    socketId: player.socketId,
+    socketId: connections[player.id]?.socketId,
     passed: player.passed,
     score: ScoringService.calculatePlayerScore(player),
     roundsWon: player.roundsWon,

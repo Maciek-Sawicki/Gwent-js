@@ -15,7 +15,7 @@
       "@repo/*": ["packages/*"]
     }
   },
-  "include": ["src/**/*", "GameManager.ts"],
+  "include": ["src/**/*"],
   "references": [
     { "path": "../../packages/shared" },
     { "path": "../../packages/game-engine" }

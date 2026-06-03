@@ -14,6 +14,7 @@ export interface CardDto {
 
 export interface PlayerDto {
   id: string;
+  socketId?: string;
   passed: boolean;
   score: number;
   roundsWon?: number;

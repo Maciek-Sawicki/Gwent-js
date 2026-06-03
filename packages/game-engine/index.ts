@@ -5,8 +5,11 @@ import "./cards/definitions/northernRealmsCards";
 // 2️⃣ Eksport publicznych modułów silnika
 export * from "./core/GameEngine";
 export * from "./core/GameState";
+export * from "./core/GameStateFactory";
 export * from "./core/PlayerState";
+export * from "./core/PlayerEntity";
 export * from "./core/CardInstance";
+export * from "./core/DeckFactory";
 
 // karty i rejestracja
 export * from "./cards/CardRegistry";
